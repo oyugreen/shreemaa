@@ -1,22 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { MapPin, Briefcase, ArrowRight, X, ArrowLeft } from "lucide-react";
+import { useEffect, useId, useState } from "react";
+import { MapPin, Briefcase, ArrowRight, X, ArrowLeft, Paperclip } from "lucide-react";
 import UnicornScene from "unicornstudio-react/next";
+import { JOBS as jobs, type Job } from "@/config/jobs";
+import { CONTACT } from "@/config/site";
+import { trackEvent } from "@/lib/analytics";
 
-const jobs = [
-  { id: 1, title: "Senior Manager · Marketplace Operations", dept: "Operations", location: "Mumbai", type: "Full-time", desc: "Lead end-to-end Amazon/Flipkart operations for category brands." },
-  { id: 2, title: "Regional Sales Head · West", dept: "Sales", location: "Mumbai", type: "Full-time", desc: "Own P&L for the western region across distribution channels." },
-  { id: 3, title: "Supply Chain Lead", dept: "Supply Chain", location: "Bhiwandi", type: "Full-time", desc: "Optimize warehouse operations across 300,000+ sq ft of infrastructure." },
-  { id: 4, title: "Performance Marketing Manager", dept: "Marketing", location: "Mumbai", type: "Full-time", desc: "Drive paid-media performance across Amazon Ads and Flipkart CPC." },
-  { id: 5, title: "Finance Manager · Treasury", dept: "Finance", location: "Mumbai", type: "Full-time", desc: "Manage working capital and channel financing programs." },
-  { id: 6, title: "Engineering Lead · Internal Tools", dept: "Technology", location: "Bengaluru", type: "Full-time", desc: "Build internal systems supporting nationwide operations." },
-  { id: 7, title: "Trade Operations Executive", dept: "Operations", location: "Mumbai", type: "Full-time", desc: "Coordinate cross-border trade documentation and logistics." },
-  { id: 8, title: "Category Manager · Smartphones", dept: "Operations", location: "Mumbai", type: "Full-time", desc: "Own the smartphone category P&L across marketplaces." },
-];
+const departments = ["All", ...Array.from(new Set(jobs.map((j) => j.dept)))];
 
-const departments = ["All", "Sales", "Operations", "Supply Chain", "Finance", "Marketing", "Technology"];
+const RESUME_TYPES = [".pdf", ".doc", ".docx"];
+const RESUME_MAX_BYTES = 5 * 1024 * 1024;
 
 const heroPhrases = [
   "problem solvers",
@@ -29,7 +24,8 @@ const heroPhrases = [
 
 export function JobsView() {
   const [filter, setFilter] = useState("All");
-  const [open, setOpen] = useState<typeof jobs[number] | null>(null);
+  // `null` job = general application.
+  const [open, setOpen] = useState<{ job: Job | null } | null>(null);
   const [phraseIndex, setPhraseIndex] = useState(0);
 
   useEffect(() => {
@@ -113,6 +109,31 @@ export function JobsView() {
             <ArrowLeft className="h-3.5 w-3.5" /> Back to life at SMG
           </Link>
 
+          {jobs.length === 0 ? (
+            <div className="rounded-3xl border border-line bg-surface-2 p-8 md:p-12">
+              <div className="text-[11px] uppercase tracking-[0.24em] text-accent font-semibold">Open roles</div>
+              <h2 className="mt-4 max-w-2xl text-3xl md:text-5xl font-bold tracking-tight leading-[1.05]">
+                No openings listed right now.
+              </h2>
+              <p className="mt-4 max-w-xl text-ink-soft leading-relaxed">
+                We hire across operations, sales, trade, technology, marketing and finance. Send us your CV and
+                we&apos;ll reach out when a role fits.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setOpen({ job: null })}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-white hover:bg-ink/85"
+                >
+                  Send a general application <ArrowRight className="h-4 w-4" />
+                </button>
+                <a href={`mailto:${CONTACT.careersEmail}`} className="inline-flex min-h-11 items-center text-sm font-medium text-accent hover:underline">
+                  or email {CONTACT.careersEmail}
+                </a>
+              </div>
+            </div>
+          ) : (
+          <>
           <div className="mb-12">
             <div className="grid lg:grid-cols-12 gap-8 items-end pb-6 border-b border-line">
               <div className="lg:col-span-5">
@@ -142,7 +163,7 @@ export function JobsView() {
                   >
                     <span className="inline-flex items-baseline gap-1.5">
                       {d}
-                      <span className={`text-[10px] font-mono tabular-nums transition-colors ${active ? "text-accent" : "text-ink-soft/60"}`}>
+                      <span className={`text-[11px] font-mono tabular-nums transition-colors ${active ? "text-accent" : "text-ink-soft/70"}`}>
                         {String(count).padStart(2, "0")}
                       </span>
                     </span>
@@ -162,12 +183,12 @@ export function JobsView() {
             {filtered.map((j) => (
               <button
                 key={j.id}
-                onClick={() => setOpen(j)}
+                onClick={() => setOpen({ job: j })}
                 className="w-full text-left py-6 grid grid-cols-12 gap-4 items-center hover:bg-surface-2 transition-colors px-4 group"
               >
                 <div className="col-span-12 md:col-span-6">
                   <div className="text-lg font-semibold tracking-tight group-hover:text-accent transition-colors">{j.title}</div>
-                  <div className="mt-1 text-sm text-ink-soft">{j.desc}</div>
+                  <div className="mt-1 text-sm text-ink-soft">{j.summary}</div>
                 </div>
                 <div className="col-span-6 md:col-span-2 text-sm text-ink-soft flex items-center gap-1.5"><Briefcase className="h-3.5 w-3.5" />{j.dept}</div>
                 <div className="col-span-6 md:col-span-2 text-sm text-ink-soft flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{j.location}</div>
@@ -179,51 +200,173 @@ export function JobsView() {
           </div>
 
           <p className="mt-8 text-sm text-ink-soft text-center">
-            Don&apos;t see your role? Email <a href="mailto:careers@shrimaa.com" className="text-accent font-medium hover:underline">careers@shrimaa.com</a>
+            Don&apos;t see your role?{" "}
+            <button type="button" onClick={() => setOpen({ job: null })} className="text-accent font-medium hover:underline">
+              Send a general application
+            </button>{" "}
+            or email <a href={`mailto:${CONTACT.careersEmail}`} className="text-accent font-medium hover:underline">{CONTACT.careersEmail}</a>
           </p>
+          </>
+          )}
         </div>
       </section>
 
-      {open && <ApplyDialog job={open} onClose={() => setOpen(null)} />}
+      {open && <ApplyDialog job={open.job} onClose={() => setOpen(null)} />}
     </>
   );
 }
 
-function ApplyDialog({ job, onClose }: { job: typeof jobs[number]; onClose: () => void }) {
+const fields = [
+  { label: "Full name", name: "name", type: "text", autoComplete: "name", required: true },
+  { label: "Email", name: "email", type: "email", autoComplete: "email", required: true },
+  { label: "Phone", name: "phone", type: "tel", autoComplete: "tel", required: true },
+  { label: "LinkedIn URL (optional)", name: "linkedin", type: "url", autoComplete: "url", required: false },
+] as const;
+
+function ApplyDialog({ job, onClose }: { job: Job | null; onClose: () => void }) {
   const [submitted, setSubmitted] = useState(false);
+  const [resume, setResume] = useState<File | null>(null);
+  const [resumeError, setResumeError] = useState("");
+  const uid = useId();
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  function onResumeChange(file: File | undefined) {
+    if (!file) {
+      setResume(null);
+      setResumeError("");
+      return;
+    }
+    const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+    if (!RESUME_TYPES.includes(ext)) {
+      setResume(null);
+      setResumeError("Upload a PDF or Word file (.pdf, .doc, .docx).");
+    } else if (file.size > RESUME_MAX_BYTES) {
+      setResume(null);
+      setResumeError("That file is over 5 MB. Please upload a smaller file.");
+    } else {
+      setResume(file);
+      setResumeError("");
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-[100] bg-ink/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-6 animate-in fade-in" onClick={onClose}>
-      <div className="bg-white rounded-t-3xl md:rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={`${uid}-title`}
+        className="bg-white rounded-t-3xl md:rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="sticky top-0 bg-white p-6 border-b border-line flex items-start justify-between">
           <div>
-            <div className="text-xs uppercase tracking-wider text-accent font-semibold">{job.dept} · {job.location}</div>
-            <h2 className="mt-1 text-2xl font-bold tracking-tight">{job.title}</h2>
+            <div className="text-xs uppercase tracking-wider text-accent font-semibold">
+              {job ? `${job.dept} · ${job.location}` : "Careers"}
+            </div>
+            <h2 id={`${uid}-title`} className="mt-1 text-2xl font-bold tracking-tight">{job ? job.title : "General application"}</h2>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-surface-2 rounded-full"><X className="h-5 w-5" /></button>
+          <button type="button" onClick={onClose} aria-label="Close" className="grid h-11 w-11 place-items-center hover:bg-surface-2 rounded-full"><X className="h-5 w-5" /></button>
         </div>
         <div className="p-6 space-y-6">
-          <p className="text-ink-soft leading-relaxed">{job.desc}</p>
+          {job ? (
+            <>
+              <p className="text-ink-soft leading-relaxed">{job.summary}</p>
+              <dl className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
+                {[["Location", job.location], ["Level", job.level], ["Experience", job.experience], ["Type", job.type]].map(([k, v]) => (
+                  <div key={k}>
+                    <dt className="text-[11px] uppercase tracking-[0.16em] text-ink-soft">{k}</dt>
+                    <dd className="mt-1 font-medium">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+              {job.responsibilities.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold">What you&apos;ll do</h3>
+                  <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-ink-soft leading-relaxed">
+                    {job.responsibilities.map((r) => <li key={r}>{r}</li>)}
+                  </ul>
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="text-ink-soft leading-relaxed">
+              Tell us about yourself and attach your CV. We keep general applications on file and reach out when a
+              role fits.
+            </p>
+          )}
           {submitted ? (
             <div className="p-8 rounded-2xl bg-brand-gradient text-white text-center">
               <div className="text-2xl font-bold">Application received</div>
               <p className="mt-2 text-white/90 text-sm">Our team will be in touch within one week.</p>
             </div>
           ) : (
-            <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} className="space-y-4">
-              {[["Full name", "text"], ["Email", "email"], ["Phone", "tel"], ["LinkedIn URL", "url"]].map(([l, t]) => (
-                <div key={l}>
-                  <label className="text-xs font-medium uppercase tracking-wider text-ink-soft">{l}</label>
-                  <input type={t} required className="mt-1.5 w-full px-4 py-3 rounded-xl border border-line focus:border-brand focus:outline-none transition-colors" />
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (resumeError) return;
+                trackEvent("job_application", { role: job?.title ?? "General application" });
+                setSubmitted(true);
+              }}
+              className="space-y-4"
+            >
+              {fields.map((f) => (
+                <div key={f.name}>
+                  <label htmlFor={`${uid}-${f.name}`} className="text-xs font-medium uppercase tracking-wider text-ink-soft">{f.label}</label>
+                  <input
+                    id={`${uid}-${f.name}`}
+                    name={f.name}
+                    type={f.type}
+                    autoComplete={f.autoComplete}
+                    required={f.required}
+                    className="mt-1.5 w-full px-4 py-3 rounded-xl border border-line focus:border-brand focus:outline-none transition-colors"
+                  />
                 </div>
               ))}
               <div>
-                <label className="text-xs font-medium uppercase tracking-wider text-ink-soft">Resume</label>
-                <input type="file" accept=".pdf,.doc,.docx" className="mt-1.5 w-full text-sm" />
+                <span id={`${uid}-resume-label`} className="text-xs font-medium uppercase tracking-wider text-ink-soft">Resume</span>
+                <label
+                  htmlFor={`${uid}-resume`}
+                  className={`mt-1.5 flex min-h-[52px] cursor-pointer items-center gap-3 rounded-xl border border-dashed px-4 py-3 transition-colors hover:border-brand focus-within:border-brand ${
+                    resumeError ? "border-destructive" : "border-line"
+                  }`}
+                >
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-surface-2 text-accent">
+                    <Paperclip className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium text-ink">
+                      {resume ? resume.name : "Choose a file"}
+                    </span>
+                    <span className="block text-xs text-ink-soft">PDF or DOC, max 5 MB</span>
+                  </span>
+                  <input
+                    id={`${uid}-resume`}
+                    name="resume"
+                    type="file"
+                    required
+                    accept={RESUME_TYPES.join(",")}
+                    aria-labelledby={`${uid}-resume-label`}
+                    aria-invalid={!!resumeError}
+                    aria-describedby={resumeError ? `${uid}-resume-error` : undefined}
+                    onChange={(e) => onResumeChange(e.target.files?.[0])}
+                    className="sr-only"
+                  />
+                </label>
+                {resumeError && <p id={`${uid}-resume-error`} className="mt-1.5 text-xs text-destructive">{resumeError}</p>}
               </div>
               <div>
-                <label className="text-xs font-medium uppercase tracking-wider text-ink-soft">Message</label>
-                <textarea rows={4} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-line focus:border-brand focus:outline-none" />
+                <label htmlFor={`${uid}-message`} className="text-xs font-medium uppercase tracking-wider text-ink-soft">Message</label>
+                <textarea id={`${uid}-message`} name="message" rows={4} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-line focus:border-brand focus:outline-none" />
               </div>
+              <p className="text-xs text-ink-soft">
+                We use these details only to assess your application. See our{" "}
+                <Link href="/privacy" className="text-accent hover:underline">Privacy Policy</Link>.
+              </p>
               <button type="submit" className="w-full inline-flex items-center justify-center gap-2 bg-ink text-white py-3.5 rounded-full font-semibold hover:bg-ink/85">
                 Submit application <ArrowRight className="h-4 w-4" />
               </button>
