@@ -139,7 +139,7 @@ export function MarketplaceNetworkDiagram({ marketplaces }: { marketplaces: Netw
               </div>
               <div className="overflow-hidden">
                 <div className="truncate text-xs font-bold leading-tight text-white">{m.name}</div>
-                <div className="truncate text-[9px] font-medium text-white/50">{m.subtitle}</div>
+                <div className="truncate text-[11px] font-medium text-white/50">{m.subtitle}</div>
               </div>
             </motion.div>
           </div>
@@ -186,7 +186,7 @@ export function MarketplaceNetworkDiagram({ marketplaces }: { marketplaces: Netw
                     <row.icon className="h-4 w-4 shrink-0 text-accent" />
                     <span>{row.label}</span>
                   </div>
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${row.tagClass}`}>{row.tag}</span>
+                  <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${row.tagClass}`}>{row.tag}</span>
                 </div>
               ))}
             </div>
@@ -222,7 +222,7 @@ export function MarketplaceNetworkDiagram({ marketplaces }: { marketplaces: Netw
               </div>
               <div>
                 <div className="text-xs font-bold leading-tight text-white">{fn.title}</div>
-                <div className="text-[10px] font-medium text-white/50">{fn.sub}</div>
+                <div className="text-[11px] font-medium text-white/50">{fn.sub}</div>
               </div>
             </motion.div>
           </div>

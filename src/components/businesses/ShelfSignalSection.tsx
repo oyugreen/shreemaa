@@ -34,7 +34,7 @@ const LEFT_LABELS = ["Catalog & content", "Performance marketing", "Growth strat
 const RIGHT_LABELS = ["Multi-state fulfillment", "Customer experience", "Returns & RTO", "Marketplace compliance"];
 
 const LABEL_CLASS =
-  "inline-block whitespace-nowrap rounded-full border border-line bg-surface px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-soft";
+  "inline-block whitespace-nowrap rounded-full border border-line bg-surface px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft";
 
 const DOTS = 2300;
 const REPEL_RADIUS = 140;
@@ -332,7 +332,7 @@ export function ShelfSignalSection() {
             {[...LEFT_LABELS, ...RIGHT_LABELS].map((label) => (
               <div
                 key={label}
-                className="flex items-center justify-center bg-surface px-3 py-5 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-soft"
+                className="flex items-center justify-center bg-surface px-3 py-5 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-soft"
               >
                 {label}
               </div>

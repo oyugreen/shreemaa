@@ -13,16 +13,20 @@ import {
   Network,
   Handshake,
   Factory,
+  ExternalLink,
 } from "lucide-react";
 import { Counter } from "@/components/Counter";
+import { FIGURES, PARTNER_ONBOARDING_URL, isSafeExternalUrl } from "@/config/site";
 import { HeroTrafficBackground } from "@/components/hero-traffic/HeroTrafficBackground";
 import { InfrastructureSection } from "@/components/home/InfrastructureSection";
 
 const stats = [
-  { icon: Store, value: 90, suffix: "K+", label: "Retailers" },
-  { icon: Handshake, value: 800, suffix: "+", label: "Distributors" },
-  { icon: Factory, value: 100, suffix: "+", label: "Manufacturers" },
+  { icon: Store, figure: FIGURES.retailers, label: "Retailers" },
+  { icon: Handshake, figure: FIGURES.distributors, label: "Distributors" },
+  { icon: Factory, figure: FIGURES.manufacturers, label: "Manufacturers" },
 ];
+
+const onboardingUrl = isSafeExternalUrl(PARTNER_ONBOARDING_URL) ? PARTNER_ONBOARDING_URL : "";
 
 const capabilities = [
   {
@@ -38,7 +42,7 @@ const capabilities = [
   {
     icon: Warehouse,
     title: "Owned warehousing",
-    body: "300,000+ sq ft of company-operated storage built for throughput and fast dispatch.",
+    body: `${FIGURES.warehousingSqFt.prose} of company-operated storage built for throughput and fast dispatch.`,
   },
   {
     icon: Truck,
@@ -81,14 +85,14 @@ export function DistributionView() {
               <Network className="h-3 w-3" /> Distribution Network
             </div>
             <h1 className="mt-6 text-[clamp(35px,8.7vw,64px)] md:text-[clamp(48px,6.975vw,108px)] font-bold tracking-[-0.025em] leading-[1.02]">
-              India&apos;s most trusted
+              India&apos;s leading
               <br />
               <span className="font-serif italic font-normal tracking-[-0.02em] text-accent">
-                route to retail.
+                distribution house.
               </span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/70 md:text-xl">
-              90,000+ retailers, 800+ distributor partners and a trained field
+              {FIGURES.retailers.prose} retailers, {FIGURES.distributors.prose} distributor partners and a trained field
               force, working as one engine to put brands on every shelf that
               matters.
             </p>
@@ -100,6 +104,17 @@ export function DistributionView() {
                 Talk to our distribution team{" "}
                 <ArrowRight className="h-4 w-4" />
               </Link>
+              {onboardingUrl && (
+                <a
+                  href={onboardingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
+                >
+                  Partner KYC / Onboarding <ExternalLink className="h-4 w-4" aria-hidden />
+                  <span className="sr-only">(opens in a new tab)</span>
+                </a>
+              )}
               <a
                 href="#capabilities"
                 className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white hover:text-ink"
@@ -126,7 +141,7 @@ export function DistributionView() {
               </span>
               <span>
                 <span className="font-semibold text-ink">
-                  <Counter to={s.value} suffix={s.suffix} />
+                  <Counter to={s.figure.to} suffix={s.figure.suffix} />
                 </span>{" "}
                 {s.label}
               </span>
@@ -136,7 +151,7 @@ export function DistributionView() {
       </section>
 
       {/* CAPABILITIES */}
-      <section id="capabilities" className="py-28">
+      <section id="capabilities" className="scroll-mt-24 py-20 md:py-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
             <div className="lg:col-span-7">
@@ -182,7 +197,7 @@ export function DistributionView() {
       </section>
 
       {/* NETWORK REACH */}
-      <section className="py-28 bg-ink text-white relative overflow-hidden">
+      <section id="network-reach" className="scroll-mt-24 py-20 md:py-28 bg-ink text-white relative overflow-hidden">
         <div className="absolute -top-32 -left-20 h-[420px] w-[420px] rounded-full bg-brand/20 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-2xl">
@@ -213,7 +228,7 @@ export function DistributionView() {
                 Owned + partner infrastructure
               </h3>
               <p className="mt-3 text-sm text-white/70 leading-relaxed">
-                300,000+ sq ft of owned warehousing, complemented by partner
+                {FIGURES.warehousingSqFt.prose} of owned warehousing, complemented by partner
                 facilities for fast, cost-efficient last-mile distribution
                 across the country.
               </p>
