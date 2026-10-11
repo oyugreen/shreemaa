@@ -4,17 +4,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+import { Menu, X, ArrowUpRight, ExternalLink } from "lucide-react";
 import logo from "@/assets/SMG-Logo-optimized (1).svg";
+import { BUSINESSES, FOUNDED_YEAR, PARTNER_ONBOARDING_URL, isSafeExternalUrl } from "@/config/site";
 
 type SubItem = { to?: string; href?: string; title: string; desc: string };
 
 const businesses: SubItem[] = [
-  { to: "/businesses/marketplace-operations", title: "Marketplace Operations", desc: "Amazon, Flipkart & beyond" },
-  { to: "/businesses/distribution-network", title: "Distribution Network", desc: "80,000+ retailers nationwide" },
-  { to: "/businesses/global-trade", title: "Global Trade · Rio World", desc: "Cross-border commerce" },
-  { href: "https://www.oyugreen.com", title: "Sustainability · OYU Green", desc: "Carbon & climate" },
+  { to: "/businesses", title: "All businesses", desc: "The group at a glance" },
+  ...BUSINESSES.map((b) => (b.external ? { href: b.href, title: b.name, desc: b.desc } : { to: b.href, title: b.name, desc: b.desc })),
 ];
+
+const onboardingUrl = isSafeExternalUrl(PARTNER_ONBOARDING_URL) ? PARTNER_ONBOARDING_URL : "";
 
 const workWithUs: SubItem[] = [
   { to: "/careers", title: "Life at SMG", desc: "The people, and how we work" },
@@ -34,7 +35,7 @@ const nav: {
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   {
-    to: "/businesses/marketplace-operations",
+    to: "/businesses",
     label: "Businesses",
     match: "/businesses",
     menu: businesses,
@@ -56,6 +57,16 @@ export function SiteHeader() {
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const [pill, setPill] = useState<{ left: number; width: number; opacity: number }>({ left: 0, width: 0, opacity: 0 });
+  const [scrolled, setScrolled] = useState(false);
+
+  // Below lg the floating capsules sit over section headings; once the page
+  // scrolls they get a blurred bar behind them.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Active item index
   const activeIdx = nav.findIndex((n) =>
@@ -81,7 +92,13 @@ export function SiteHeader() {
   }, [activeIdx, path]);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 pt-4 px-4 pointer-events-none">
+    <header
+      className={`fixed top-0 inset-x-0 z-50 pt-4 px-4 pointer-events-none transition-[background-color,padding,box-shadow] duration-300 ${
+        scrolled || open
+          ? "max-lg:pointer-events-auto max-lg:pt-2 max-lg:pb-2 max-lg:bg-surface/85 max-lg:backdrop-blur-xl max-lg:shadow-[0_1px_0_var(--line)]"
+          : ""
+      }`}
+    >
       <div className="mx-auto max-w-6xl flex items-center justify-between gap-4 pointer-events-auto">
         {/* Logo capsule */}
         <Link
@@ -91,7 +108,7 @@ export function SiteHeader() {
           <Image src={logo} alt="SMG" className="h-7 w-7 rounded-full" priority />
           <div className="flex flex-col leading-none">
             <span className="text-[12px] font-semibold tracking-tight text-ink">SHRI MAA GROUP</span>
-            <span className="text-[9px] uppercase tracking-[0.2em] text-ink-soft mt-0.5">Est. 1997</span>
+            <span className="text-[11px] uppercase tracking-[0.16em] text-ink-soft mt-0.5">Est. {FOUNDED_YEAR}</span>
           </div>
         </Link>
 
@@ -139,9 +156,13 @@ export function SiteHeader() {
                             <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-brand" />
                             <div className="flex-1">
                               <div className="text-sm font-semibold text-ink group-hover:text-accent transition-colors">{b.title}</div>
-                              <div className="text-[11px] text-ink-soft mt-0.5">{b.desc}</div>
+                              <div className="text-xs text-ink-soft mt-0.5">{b.desc}</div>
                             </div>
-                            <ArrowUpRight className="h-3.5 w-3.5 text-ink/30 group-hover:text-accent transition-colors" />
+                            {b.href ? (
+                              <ExternalLink className="h-3.5 w-3.5 text-ink/30 group-hover:text-accent transition-colors" aria-hidden />
+                            ) : (
+                              <ArrowUpRight className="h-3.5 w-3.5 text-ink/30 group-hover:text-accent transition-colors" />
+                            )}
                           </>
                         );
                         if (b.href) {
@@ -154,6 +175,7 @@ export function SiteHeader() {
                               className="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-2 transition-colors group"
                             >
                               {content}
+                              <span className="sr-only">(opens in a new tab)</span>
                             </a>
                           );
                         }
@@ -176,7 +198,18 @@ export function SiteHeader() {
         </nav>
 
         {/* CTA capsule */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:flex items-center gap-2">
+          {onboardingUrl && (
+            <a
+              href={onboardingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-3 rounded-full bg-white/85 backdrop-blur-xl border border-line/80 text-[13px] font-medium text-ink hover:border-ink/30 transition-colors"
+            >
+              Partner KYC <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+          )}
           <Link
             href="/contact"
             className="group inline-flex items-center gap-1.5 pl-5 pr-2 py-2 rounded-full bg-ink text-white text-[13px] font-medium hover:bg-ink/85 transition-colors shadow-[0_8px_30px_-12px_rgba(0,0,0,0.3)]"
@@ -191,8 +224,9 @@ export function SiteHeader() {
         {/* Mobile */}
         <button
           onClick={() => setOpen(!open)}
-          className="lg:hidden p-2.5 rounded-full bg-white/90 backdrop-blur-xl border border-line text-ink"
-          aria-label="Menu"
+          className="lg:hidden grid h-11 w-11 place-items-center rounded-full bg-white/90 backdrop-blur-xl border border-line text-ink"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
         >
           {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
@@ -211,24 +245,46 @@ export function SiteHeader() {
             .filter((n) => n.menu)
             .map((n) => (
               <div key={n.label} className="mt-3 pt-3 border-t border-line">
-                <div className="text-[10px] uppercase tracking-wider text-ink-soft mb-2">{n.label}</div>
+                <div className="text-[11px] uppercase tracking-wider text-ink-soft mb-2">{n.label}</div>
                 {n.menu!.map((b) => {
                   const key = b.to || b.href;
                   if (b.href) {
                     return (
-                      <a key={key} href={b.href} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="block py-1.5 text-sm text-ink/80">
-                        {b.title}
+                      <a key={key} href={b.href} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="flex items-center gap-1.5 py-2.5 text-sm text-ink/80">
+                        {b.title} <ExternalLink className="h-3.5 w-3.5 text-ink/40" aria-hidden />
+                        <span className="sr-only">(opens in a new tab)</span>
                       </a>
                     );
                   }
                   return (
-                    <Link key={key} href={b.to!} onClick={() => setOpen(false)} className="block py-1.5 text-sm text-ink/80">
+                    <Link key={key} href={b.to!} onClick={() => setOpen(false)} className="block py-2.5 text-sm text-ink/80">
                       {b.title}
                     </Link>
                   );
                 })}
               </div>
             ))}
+          <div className="mt-4 pt-4 border-t border-line grid gap-2">
+            <Link
+              href="/contact"
+              onClick={() => setOpen(false)}
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-ink px-5 text-sm font-medium text-white"
+            >
+              Partner with us <ArrowUpRight className="h-4 w-4" />
+            </Link>
+            {onboardingUrl && (
+              <a
+                href={onboardingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
+                className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-line px-5 text-sm font-medium text-ink"
+              >
+                Partner KYC / Onboarding <ExternalLink className="h-4 w-4" aria-hidden />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            )}
+          </div>
         </div>
       )}
     </header>
