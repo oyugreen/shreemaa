@@ -3,6 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "framer-motion";
 
+/**
+ * Animated number. The server renders the real value, so search engines, link
+ * previews and slow phones never see "0". Only a counter that starts below the
+ * fold resets to 0 on hydration and counts up when it scrolls into view; one
+ * already on screen, or under reduced motion, simply stays at its value.
+ */
 export function Counter({
   to,
   prefix = "",
@@ -16,9 +22,20 @@ export function Counter({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const [val, setVal] = useState(0);
+  const [val, setVal] = useState(to);
+  const [armed, setArmed] = useState(false);
+
   useEffect(() => {
-    if (!inView) return;
+    const el = ref.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (el.getBoundingClientRect().top > window.innerHeight) {
+      setVal(0);
+      setArmed(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!armed || !inView) return;
     const start = performance.now();
     let raf = 0;
     const tick = (t: number) => {
@@ -29,7 +46,8 @@ export function Counter({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [inView, to, duration]);
+  }, [armed, inView, to, duration]);
+
   return (
     <span ref={ref}>
       {prefix}
