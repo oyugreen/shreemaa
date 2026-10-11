@@ -3,16 +3,17 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
 import { ArrowUpRight, Handshake, Landmark, MapPin, ShoppingBag, Truck, Warehouse, type LucideIcon } from "lucide-react";
+import { DEVICE_THROUGHPUT, FIGURES, FOUNDED_YEAR } from "@/config/site";
 
-type Offer = { index: string; eyebrow: string; title: string; accent: string; description: string; stat: ReactNode; statLabel: string; note: string; href: string; icon: LucideIcon };
+type Offer = { index: string; eyebrow: string; title: string; accent: string; description: string; stat: ReactNode; statLabel: string; note: string; href: string; cta: string; icon: LucideIcon };
 
 const offers: Offer[] = [
-  { index: "01", eyebrow: "Nationwide reach", title: "Reach every", accent: "opportunity.", description: "Active presence across India with the network to move brands from metros to emerging markets without losing speed or control.", stat: "80%", statLabel: "Pincode coverage", note: "15+ fulfilment centres", href: "/businesses/distribution-network", icon: MapPin },
-  { index: "02", eyebrow: "Marketplace expertise", title: "Operate at", accent: "marketplace speed.", description: "Deep operational fluency across Amazon, Flipkart and emerging marketplaces—from catalogues and campaigns to fulfilment and customer experience.", stat: "55K+", statLabel: "Orders every month", note: "One accountable operating team", href: "/businesses/marketplace-operations", icon: ShoppingBag },
-  { index: "03", eyebrow: "Distribution leadership", title: "Built into", accent: "the channel.", description: "Three decades of trusted retail relationships give partner brands meaningful access, visibility and execution across India.", stat: "80K+", statLabel: "Retailers served", note: "600+ distributors", href: "/businesses/distribution-network", icon: Truck },
-  { index: "04", eyebrow: "Infrastructure at scale", title: "Space to", accent: "keep growing.", description: "Owned warehousing and operating facilities create a dependable foundation for faster fulfilment and the next stage of demand.", stat: "150K", statLabel: "Sq ft owned", note: "Across four operating hubs", href: "/about", icon: Warehouse },
-  { index: "05", eyebrow: "Capital strength", title: "Growth without", accent: "the drag.", description: "A strong revenue base and balance-sheet depth support working capital, inventory movement and ambitious channel expansion.", stat: "₹4,000 Cr", statLabel: "Revenue base", note: "Working capital carried by SMG", href: "/about", icon: Landmark },
-  { index: "06", eyebrow: "Long-term partnerships", title: "Here for the", accent: "long run.", description: "Multi-decade relationships with demanding manufacturers are built on transparent execution, shared accountability and durable value.", stat: "1997", statLabel: "Operating since", note: "100+ manufacturer relationships", href: "/contact", icon: Handshake },
+  { index: "01", eyebrow: "Nationwide reach", title: "Reach every", accent: "opportunity.", description: "Active presence across India with the network to move brands from metros to emerging markets without losing speed or control.", stat: FIGURES.pincodeCoverage.text, statLabel: "Pincode coverage", note: `${FIGURES.fulfilmentCentres.text} fulfilment centres`, href: "/businesses/distribution-network", cta: "Explore capability", icon: MapPin },
+  { index: "02", eyebrow: "Marketplace expertise", title: "Operate at", accent: "marketplace speed.", description: "Deep operational fluency across Amazon, Flipkart and emerging marketplaces—from catalogues and campaigns to fulfilment and customer experience.", stat: FIGURES.marketplaceOrdersPerMonth.text, statLabel: "Orders every month", note: "One accountable operating team", href: "/businesses/marketplace-operations", cta: "Explore capability", icon: ShoppingBag },
+  { index: "03", eyebrow: "Distribution leadership", title: "Built into", accent: "the channel.", description: "As India's leading distribution house, three decades of trusted retail relationships give partner brands meaningful access, visibility and execution across India.", stat: FIGURES.retailers.text, statLabel: "Retailers served", note: `${FIGURES.distributors.text} distributors`, href: "/businesses/distribution-network", cta: "Explore capability", icon: Truck },
+  { index: "04", eyebrow: "Infrastructure at scale", title: "Space to", accent: "keep growing.", description: "Owned warehousing and operating facilities create a dependable foundation for faster fulfilment and the next stage of demand.", stat: `${FIGURES.warehousingSqFt.to}K`, statLabel: "Sq ft owned", note: "Across four operating hubs", href: "/businesses/distribution-network#infrastructure", cta: "Explore capability", icon: Warehouse },
+  { index: "05", eyebrow: "Capital strength", title: "Growth without", accent: "the drag.", description: "A strong revenue base and balance-sheet depth support working capital, inventory movement and ambitious channel expansion.", stat: DEVICE_THROUGHPUT.stat, statLabel: DEVICE_THROUGHPUT.label, note: DEVICE_THROUGHPUT.caption, href: "/contact", cta: "Partner with us", icon: Landmark },
+  { index: "06", eyebrow: "Long-term partnerships", title: "Here for the", accent: "long run.", description: "Multi-decade relationships with demanding manufacturers are built on transparent execution, shared accountability and durable value.", stat: String(FOUNDED_YEAR), statLabel: "Operating since", note: `${FIGURES.manufacturers.text} manufacturer relationships`, href: "/contact", cta: "Partner with us", icon: Handshake },
 ];
 
 export function ScaleOffersSection() {
@@ -73,18 +74,16 @@ export function ScaleOffersSection() {
                       <h3 className="mt-5 font-display text-[clamp(1.8rem,2.8vw,3rem)] font-semibold leading-[0.92] tracking-[-0.055em]">
                         {offer.title} <span className="text-accent">{offer.accent}</span>
                       </h3>
-                      <p className="mt-3 text-xs leading-relaxed text-ink/65 md:text-sm max-w-[44ch]">
+                      <p className="mt-3 text-sm leading-relaxed text-ink/70 max-w-[44ch]">
                         {offer.description}
                       </p>
                     </div>
-                    <div className="mt-6">
+                    <div className="mt-4">
                       <Link
                         href={offer.href}
-                        target={offer.href.startsWith("http") ? "_blank" : undefined}
-                        rel={offer.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                        className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink transition-colors group-hover:text-accent"
+                        className="inline-flex min-h-11 items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink transition-colors group-hover:text-accent"
                       >
-                        Explore capability <ArrowUpRight className="h-4 w-4 text-accent transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        {offer.cta} <ArrowUpRight className="h-4 w-4 text-accent transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                       </Link>
                     </div>
                   </div>
@@ -96,11 +95,11 @@ export function ScaleOffersSection() {
                       <div className="font-display text-3xl md:text-4xl font-semibold leading-none tracking-[-0.055em]">
                         {offer.stat}
                       </div>
-                      <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/60 md:text-xs">
+                      <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/65 md:text-xs">
                         {offer.statLabel}
                       </div>
                     </div>
-                    <div className="relative z-10 text-right text-[10px] text-white/45 md:text-xs">
+                    <div className="relative z-10 max-w-[24ch] text-right text-xs text-white/60">
                       {offer.note}
                     </div>
                   </div>

@@ -337,9 +337,9 @@ export const MARKETPLACE_COPY: CommandCopy = {
 };
 
 export const HOME_COPY: CommandCopy = {
-  labels: ["Marketplace Operations", "Distribution Network", "Global Trade", "Exports", "Sustainability"],
+  labels: ["Marketplace Operations", "Distribution Network", "Global Trade & Exports", "Sustainability"],
   labelsDescription:
-    "Marketplace operations, a distribution network, global trade, exports and sustainability, run as one group.",
-  heading: "Five businesses. One commerce engine.",
+    "Marketplace operations, a distribution network, global trade and exports, and sustainability, run as one group.",
+  heading: "Four businesses. One commerce engine.",
   knockout: "home",
 };

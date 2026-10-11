@@ -5,7 +5,6 @@ import {
   DEFAULT_PALETTE,
   DEFAULT_SCENE,
   DESKTOP_TIMELINE,
-  MOBILE_TIMELINE,
   type CommandCopy,
   type CommandPalette,
   type CommandSceneConfig,
@@ -48,8 +47,10 @@ const GRAIN_URL =
  * `sequenceAt`, so the sequence reverses exactly and survives reloads midway.
  * Native scrolling only: nothing listens to wheel or touch input.
  *
- * With reduced motion the section is ordinary document flow: the hero over a
- * still composition, then the heading as plain text.
+ * With reduced motion, and on phones (below `mobileBreakpoint`), the section
+ * is ordinary document flow: the hero over a still composition, then the
+ * heading as plain text. That keeps the phone intro to about one screen
+ * instead of several screens of pinned scrolling.
  */
 export function CommandHeroExperience({
   hero,
@@ -117,15 +118,14 @@ export function CommandHeroExperience({
 
     function apply() {
       frame = 0;
-      if (reducedMotion.matches) {
+      if (reducedMotion.matches || !desktopQuery.matches) {
         resetForReducedMotion();
         return;
       }
-      const desktop = desktopQuery.matches;
-      const timeline = desktop ? DESKTOP_TIMELINE : MOBILE_TIMELINE;
+      const timeline = DESKTOP_TIMELINE;
       const scrolled = -section!.getBoundingClientRect().top / viewportHeight;
       lastFraction = scrolled / timeline.total;
-      lastDesktop = desktop;
+      lastDesktop = true;
       const state = sequenceAt(scrolled, timeline, labelCount);
 
       copyEl!.style.transform = `translate3d(0, ${(state.copyOffset * viewportHeight).toFixed(2)}px, 0)`;
@@ -137,10 +137,9 @@ export function CommandHeroExperience({
         el.style.opacity = state.labelOpacities[i].toFixed(3);
       });
 
-      const layout = desktop ? "desktop" : "mobile";
       knockoutRef.current?.apply({
-        layout,
-        frame: state.mask < 0 ? null : knockoutFrame(state.mask, layouts[layout], viewportWidth, viewportHeight, !desktop),
+        layout: "desktop",
+        frame: state.mask < 0 ? null : knockoutFrame(state.mask, layouts.desktop, viewportWidth, viewportHeight, false),
         titleOpacity: state.titleOpacity,
         covered: state.covered,
       });
@@ -161,8 +160,8 @@ export function CommandHeroExperience({
       // length; scroll to the same point in the sequence instead of the same
       // pixel offset. The stage is lvh-sized, so toolbar changes never land here.
       const lengthChanged = Math.abs(viewportHeight - previousHeight) > 1 || desktop !== lastDesktop;
-      if (lengthChanged && !reducedMotion.matches && lastFraction > 0 && lastFraction < 1) {
-        const timeline = desktop ? DESKTOP_TIMELINE : MOBILE_TIMELINE;
+      if (lengthChanged && desktop && !reducedMotion.matches && lastFraction > 0 && lastFraction < 1) {
+        const timeline = DESKTOP_TIMELINE;
         const sectionTop = section.getBoundingClientRect().top + window.scrollY;
         window.scrollTo({ top: sectionTop + lastFraction * timeline.total * viewportHeight, behavior: "instant" });
       }
@@ -212,7 +211,6 @@ export function CommandHeroExperience({
   const [g0, g1, g2] = palette.gradient;
   const style = {
     "--command-total-desktop": DESKTOP_TIMELINE.total,
-    "--command-total-mobile": MOBILE_TIMELINE.total,
     backgroundColor: palette.endBackground,
   } as CSSProperties;
 
@@ -220,11 +218,11 @@ export function CommandHeroExperience({
     <section
       ref={sectionRef}
       style={style}
-      className="relative h-[calc(100lvh*(1+var(--command-total-mobile)))] text-white md:h-[calc(100lvh*(1+var(--command-total-desktop)))] motion-reduce:h-auto"
+      className="relative h-auto text-white md:h-[calc(100lvh*(1+var(--command-total-desktop)))] motion-reduce:h-auto"
     >
       <div
         ref={stageRef}
-        className="sticky top-0 isolate h-lvh w-full overflow-hidden motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-svh"
+        className="relative isolate min-h-svh w-full overflow-hidden md:sticky md:top-0 md:h-lvh md:min-h-0 motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-svh"
       >
         {/* Static gradient and glow: the whole look without WebGL, and the
             ground beneath it while the scene loads. */}
@@ -254,7 +252,7 @@ export function CommandHeroExperience({
 
         <div
           ref={copyRef}
-          className="relative z-50 flex h-lvh items-center justify-center pt-16 will-change-transform motion-reduce:h-auto motion-reduce:min-h-svh motion-reduce:py-36"
+          className="relative z-50 flex min-h-svh items-center justify-center py-24 md:h-lvh md:min-h-0 md:py-0 md:pt-16 md:will-change-transform motion-reduce:h-auto motion-reduce:min-h-svh motion-reduce:py-36"
         >
           {hero}
         </div>
@@ -262,7 +260,7 @@ export function CommandHeroExperience({
 
       {/* The one announced heading and label summary. Visually the knockout
           and labels draw them; with reduced motion they show here as text. */}
-      <div className="sr-only motion-reduce:not-sr-only motion-reduce:block motion-reduce:px-6 motion-reduce:pt-28 motion-reduce:pb-32 motion-reduce:text-center">
+      <div className="not-sr-only block px-6 pt-4 pb-16 text-center md:motion-safe:sr-only motion-reduce:not-sr-only motion-reduce:block motion-reduce:px-6 motion-reduce:pt-28 motion-reduce:pb-32 motion-reduce:text-center">
         <h2 className="font-display text-4xl font-bold tracking-tight md:text-6xl">{copy.heading}</h2>
         <p className="mx-auto mt-5 max-w-xl text-white/70">{copy.labelsDescription}</p>
       </div>

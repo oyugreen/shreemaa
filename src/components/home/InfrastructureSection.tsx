@@ -5,19 +5,20 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { ArrowUpRight, Package, Building2, Ship, Store } from "lucide-react";
 import warehouse from "@/assets/infra-warehouse.jpg";
+import { FIGURES, OFFICES } from "@/config/site";
 
 const infraStats = [
-  { icon: Package, n: "70+", label: "Fulfillment centers", desc: "Positioned close to demand across 21 cities." },
-  { icon: Building2, n: "9", label: "Global offices", desc: "Gurgaon HQ, with teams across five regions." },
+  { icon: Package, n: FIGURES.fulfilmentCentres.text, label: "Fulfilment centres", desc: "Positioned close to demand across India." },
+  { icon: Building2, n: String(OFFICES.length), label: "Global offices", desc: "Teams across five regions." },
   { icon: Ship, n: "5", label: "Trade regions", desc: "Sourcing and export lanes, port to shelf." },
-  { icon: Store, n: "80K+", label: "Retailers served", desc: "From metros through to deep tier-3 towns." },
+  { icon: Store, n: FIGURES.retailers.text, label: "Retailers served", desc: "From metros through to deep tier-3 towns." },
 ];
 
 const PARALLAX_DEPTH = 120;
 
 export function InfrastructureSection() {
   return (
-    <section className="bg-surface-2 overflow-hidden">
+    <section id="infrastructure" className="scroll-mt-24 bg-surface-2 overflow-hidden">
       <div className="pt-28 md:pt-36">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end">
           <div className="lg:col-span-8">
@@ -47,8 +48,8 @@ export function InfrastructureSection() {
                   </div>
                   <div className="font-display text-xl font-semibold tracking-[-0.03em] text-ink">{s.n}</div>
                 </div>
-                <div className="mt-3 text-[10px] uppercase tracking-[0.2em] text-accent font-semibold">{s.label}</div>
-                <div className="mt-1 max-w-[30ch] text-xs leading-[1.6] text-ink-soft">{s.desc}</div>
+                <div className="mt-3 text-[11px] uppercase tracking-[0.16em] text-accent font-semibold">{s.label}</div>
+                <div className="mt-1 max-w-[30ch] text-sm leading-[1.5] text-ink-soft">{s.desc}</div>
               </div>
             ))}
           </div>
@@ -98,21 +99,22 @@ function InfrastructureBanner() {
   return (
     <div ref={frameRef} className="relative h-[300px] md:h-[400px] overflow-hidden">
       <div ref={imgRef} className="absolute -top-[45%] left-0 h-[190%] w-full will-change-transform">
-        <Image src={warehouse} alt="Warehouse" fill sizes="100vw" className="object-cover" />
+        <Image src={warehouse} alt="Racked aisles inside an SMG warehouse" fill sizes="100vw" className="object-cover" />
       </div>
       <div className="absolute inset-0 bg-[linear-gradient(to_top,oklch(0.17_0.01_60)_0%,oklch(0.17_0.01_60/0.55)_40%,oklch(0.17_0.01_60/0.1)_85%)]" />
       <div className="absolute inset-x-0 bottom-0 px-6 pb-10 lg:px-10 lg:pb-10">
         <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-8 text-white">
           <div>
+            {/* Hub list awaiting SMG confirmation (change list, footprint item 6). */}
             <div className="text-[11px] uppercase tracking-[0.2em] text-white/70">
               Bhiwandi · Gurgaon · Hyderabad · Kolkata
             </div>
             <div className="mt-2.5 font-display text-[28px] md:text-[34px] font-semibold tracking-[-0.03em]">
-              300K+ sq ft, owned and operated
+              {FIGURES.warehousingSqFt.text}, owned and operated
             </div>
           </div>
           <Link
-            href="/businesses/marketplace-operations"
+            href="#network-reach"
             className="inline-flex flex-none items-center gap-2 rounded-full bg-white py-2 pl-5 pr-2 text-sm font-medium text-ink hover:bg-white/90 transition-colors"
           >
             See the network
