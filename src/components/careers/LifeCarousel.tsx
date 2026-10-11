@@ -87,8 +87,8 @@ export function LifeCarousel({ photos, onOpen, fallback, suspended = false, stag
             </button>;
           })}
         </div>
-        <div className="sr-only focus-within:not-sr-only focus-within:mx-auto focus-within:mt-6 focus-within:flex focus-within:max-w-3xl focus-within:items-center focus-within:justify-between">
-          <button type="button" onClick={() => onOpen(active)} className="group flex items-center gap-3 text-left focus-visible:outline-2 focus-visible:outline-brand">
+        <div className="sr-only focus-within:not-sr-only focus-within:mx-auto focus-within:mt-6 focus-within:flex focus-within:max-w-3xl focus-within:items-center focus-within:justify-between [@media(pointer:coarse)]:not-sr-only [@media(pointer:coarse)]:mx-auto [@media(pointer:coarse)]:mt-4 [@media(pointer:coarse)]:flex [@media(pointer:coarse)]:max-w-3xl [@media(pointer:coarse)]:items-center [@media(pointer:coarse)]:justify-between [@media(pointer:coarse)]:gap-3">
+          <button type="button" onClick={() => onOpen(active)} className="group flex min-h-11 min-w-0 items-center gap-3 text-left focus-visible:outline-2 focus-visible:outline-brand">
             <span className="font-mono text-xs text-accent">{String(active + 1).padStart(2, "0")} / {String(photos.length).padStart(2, "0")}</span>
             <span className="text-sm font-medium">{current.caption}</span>
             <ArrowUpRight className="h-4 w-4 shrink-0 transition-transform group-hover:-translate-y-0.5" />

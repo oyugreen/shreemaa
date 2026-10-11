@@ -23,6 +23,7 @@ import independenceDay from "@/assets/life/independence-day-office.jpeg";
 import pinkTerrace from "@/assets/life/pink-day-terrace-celebration.jpeg";
 import christmasHats from "@/assets/life/christmas-santa-hats.jpeg";
 import { Counter } from "@/components/Counter";
+import { FIGURES, OFFICES } from "@/config/site";
 import { CarouselHero } from "./CarouselHero";
 import type { Photo } from "./types";
 
@@ -48,16 +49,16 @@ const gallery: Photo[] = [
 ];
 
 const stats = [
-  { to: 28, suffix: "", label: ["Years building", "together"] },
-  { to: 500, suffix: "+", label: ["Team members", "nationwide"] },
-  { to: 12, suffix: "+", label: ["Cities and", "locations"] },
-  { to: 80, suffix: "K+", label: ["Retail partners", "we serve"] },
+  { ...FIGURES.yearsInBusiness, label: ["Years building", "together"] },
+  { ...FIGURES.teamMembers, label: ["Team members", "nationwide"] },
+  { to: OFFICES.length, suffix: "", label: ["Offices across", "three continents"] },
+  { ...FIGURES.retailers, label: ["Retail partners", "we serve"] },
 ];
 
 const pillars = [
   { n: "01", t: "People first, always", d: "Even as SMG grows, colleagues know the people they work with. We make time for the moments that matter to each other." },
   { n: "02", t: "Real ownership", d: "Your decisions move real stock, reach real retailers and shape what customers can buy." },
-  { n: "03", t: "Learn by doing", d: "Work alongside the teams that run marketplace categories, trading desks and field distribution. Learn by solving live business problems." },
+  { n: "03", t: "Learn by doing", d: "Work alongside the teams that run marketplace categories, global trade desks and field distribution. Learn by solving live business problems." },
   { n: "04", t: "Celebrate everything", d: "Diwali, Christmas, Holi, ethnic days, birthdays, milestone wins. There's almost always something happening." },
 ];
 
@@ -145,7 +146,7 @@ export function CareersView() {
                   Come build something<br />that <span className="italic font-display font-normal">lasts.</span>
                 </h2>
                 <p className="mt-5 text-white/85 text-lg max-w-xl leading-relaxed">
-                  Roles across operations, sales, trade, technology, marketing and finance, based out of Mumbai, Bhiwandi and Bengaluru.
+                  Roles across operations, sales, trade, technology, marketing and finance, based out of Gurgaon, Bhopal, Indore and our other offices.
                 </p>
               </div>
               <div className="md:col-span-4 flex md:justify-end">
@@ -204,7 +205,7 @@ export function CareersView() {
               sizes="100vw"
             />
             <figcaption className="text-center text-white/90 max-w-2xl">
-              <span className="inline-block text-[10px] uppercase tracking-[0.24em] text-white/60 mb-2">
+              <span className="inline-block text-[11px] uppercase tracking-[0.2em] text-white/65 mb-2">
                 {gallery[active].tag} · {active + 1} / {gallery.length}
               </span>
               <p className="text-base md:text-lg">{gallery[active].caption}</p>
