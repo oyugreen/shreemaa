@@ -4,7 +4,7 @@ import { ContactView } from "@/components/contact/ContactView";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Reach Shri Maa Group. Headquarters in Bhopal, corporate office in Gurgaon. We reply within one business day.",
+    "Reach Shri Maa Group. Offices in Gurgaon and across India. We reply within one business day.",
   openGraph: {
     title: "Contact Shri Maa Group",
     description: "Say hello to SMG.",
