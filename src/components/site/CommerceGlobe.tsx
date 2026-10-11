@@ -13,15 +13,17 @@ export type GlobeLocation = {
   focus?: string;
   /** [lng, lat] */
   coords: [number, number];
-  hq?: boolean;
 };
+
+/** Below this width the globe is a static image: no WebGL, no hidden markers. */
+const STATIC_QUERY = "(max-width: 767px)";
 
 /**
  * The Global Trade particle globe, with the offices marked in brand red and
- * the HQ as its pulsing hub.
+ * the first listed office as its pulsing hub.
  */
 function globeConfig(locations: GlobeLocation[]): GlobeConfig {
-  const hub = Math.max(0, locations.findIndex((location) => location.hq));
+  const hub = 0;
   const points = locations.map((location, index) => ({
     id: String(index),
     lat: location.coords[1],
@@ -84,6 +86,10 @@ export function CommerceGlobe({ locations }: { locations: GlobeLocation[] }) {
       async ([entry]) => {
         if (!entry.isIntersecting) return;
         observer.disconnect();
+        if (window.matchMedia(STATIC_QUERY).matches) {
+          setStatus("static");
+          return;
+        }
         try {
           const { createGlobeScene } = await import("@/components/particle-globe/globeScene");
           if (disposed) return;
@@ -153,11 +159,12 @@ export function CommerceGlobe({ locations }: { locations: GlobeLocation[] }) {
             role="img"
             aria-label="Interactive particle globe showing Shri Maa Group's office network"
           />
-          {status === "error" && (
+          {(status === "error" || status === "static") && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               className="commerce-globe__fallback"
               src="/globe/fallback.svg"
-              alt="Globe showing our connected world"
+              alt={`Globe showing Shri Maa Group's ${locations.length} offices across India, the Middle East, Asia Pacific, the Americas and Africa`}
             />
           )}
           {status === "loading" && (
@@ -210,7 +217,6 @@ export function CommerceGlobe({ locations }: { locations: GlobeLocation[] }) {
                   <span className="commerce-globe__office-main">
                     <span className="commerce-globe__office-city">
                       {location.city}
-                      {location.hq && <span className="commerce-globe__office-hq">HQ</span>}
                     </span>
                     <span className="commerce-globe__office-role">{location.role}</span>
                     {location.focus && <span className="commerce-globe__office-focus">{location.focus}</span>}

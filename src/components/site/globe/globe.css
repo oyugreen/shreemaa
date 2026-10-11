@@ -314,7 +314,13 @@
   .commerce-globe__offices {
     max-width: none;
   }
+}
+/* Phones get a static globe image (see STATIC_QUERY in CommerceGlobe.tsx). */
+@media (max-width: 767px) {
+  .commerce-globe__visual {
+    height: 320px;
   }
+}
 @media (max-width: 600px) {
   .commerce-globe {
     padding-top: 44px;
@@ -324,11 +330,8 @@
     font-size: 38px;
   }
   .commerce-globe__heading > p {
-    font-size: 13px;
-    max-width: 300px;
-  }
-  .commerce-globe__visual {
-    height: 460px;
+    font-size: 15px;
+    max-width: 320px;
   }
   .commerce-globe__tools {
     left: 12px;

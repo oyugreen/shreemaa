@@ -1,5 +1,6 @@
 import { WaveRing } from "./WaveRing";
 import styles from "./aboutHero.module.css";
+import { FOUNDED_YEAR } from "@/config/site";
 
 export function AboutHero() {
   return (
@@ -13,7 +14,7 @@ export function AboutHero() {
           <span>Building markets.</span>
         </h1>
         <p className={styles.description}>
-          Shri Maa Group is a global commerce, distribution and trade company. For nearly three decades we have built the infrastructure, technology and networks that move products from the world&apos;s leading brands into the hands of millions of consumers.
+          Shri Maa Group is a global commerce and distribution house. Since {FOUNDED_YEAR} we have built the infrastructure, technology and networks that move products from the world&apos;s leading brands into the hands of millions of consumers.
         </p>      </div>
       <div className={styles.rule} aria-hidden="true" />
     </section>

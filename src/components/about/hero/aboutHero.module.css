@@ -26,7 +26,8 @@
   .media { left: 30vw; }
 }
 @media (max-width: 600px) {
-  .media { top: 44px; left: 28vw; width: 480px; height: 300px; margin-top: 2rem; }
+  /* Below the copy, so no paragraph text sits over the ring lines. */
+  .media { top: auto; bottom: 0; left: 18vw; width: 480px; height: 300px; }
 }
 .content { width: 100%; max-width: 1520px; margin-inline: auto; }
 .title {

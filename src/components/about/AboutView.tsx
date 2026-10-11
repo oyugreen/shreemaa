@@ -3,30 +3,7 @@
 import { Counter } from "@/components/Counter";
 import { AboutHero } from "./hero/AboutHero";
 import { CommerceGlobe } from "@/components/site/CommerceGlobe";
-
-type Office = {
-  city: string;
-  country: string;
-  state: string;
-  role: string;
-  focus: string;
-  coords: [number, number]; // [lng, lat]
-  hq?: boolean;
-};
-
-const OFFICES: Office[] = [
-  // India - Bhopal is HQ
-  { city: "Bhopal",    country: "India",     state: "Madhya Pradesh",  role: "Global Headquarters",   focus: "Group leadership, strategy and operations",         coords: [77.41, 23.26], hq: true },
-  { city: "Gurgaon",   country: "India",     state: "Haryana",         role: "Corporate Office",      focus: "Corporate functions, partnerships and technology",  coords: [77.03, 28.46] },
-  { city: "Mumbai",    country: "India",     state: "Maharashtra",     role: "Regional Office",       focus: "West India commercial operations",                  coords: [72.88, 19.08] },
-  { city: "Hyderabad", country: "India",     state: "Telangana",       role: "Regional Office",       focus: "South India distribution and market expansion",     coords: [78.49, 17.39] },
-  { city: "Indore",    country: "India",     state: "Madhya Pradesh",  role: "Regional Office",       focus: "Central India warehousing and logistics",           coords: [75.86, 22.72] },
-  // International
-  { city: "Dubai",     country: "UAE",       state: "Dubai",           role: "Regional Office",       focus: "Global trade, sourcing and re-export corridors",    coords: [55.27, 25.20] },
-  { city: "Singapore", country: "Singapore", state: "Singapore",       role: "Regional Office",       focus: "Trade finance and Southeast Asia distribution",     coords: [103.82, 1.35] },
-  { city: "New York",  country: "USA",       state: "New York",        role: "Regional Office",       focus: "Americas brand partnerships and market access",     coords: [-74.00, 40.71] },
-  { city: "Kampala",   country: "Uganda",    state: "Central Region",  role: "Regional Office",       focus: "East Africa distribution build-out",                coords: [32.58, 0.32] },
-];
+import { FIGURES, FOUNDED_YEAR, OFFICES, countWord } from "@/config/site";
 
 export function AboutView() {
   return (
@@ -36,7 +13,7 @@ export function AboutView() {
       <CommerceGlobe locations={OFFICES} />
 
       {/* WHO WE ARE */}
-      <section className="bg-ink text-white py-28 md:py-36">
+      <section className="bg-ink text-white py-20 md:py-36">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 mb-20">
             <div className="md:col-span-4 text-[11px] uppercase tracking-[0.22em] text-white/50">
@@ -49,9 +26,9 @@ export function AboutView() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10 border border-white/10">
             {[
-              { n: "01", t: "Origin",    d: "Started from humble beginnings in 1997 as a single distribution business in India." },
-              { n: "02", t: "Evolution", d: "Across nearly three decades we have built marketplace, distribution, trading, global trade and sustainability businesses. Each one operates at national scale." },
-              { n: "03", t: "Today",     d: "An India-rooted company with nine offices across India, the Middle East, Asia Pacific, the Americas and Africa, powered by in-house technology across order management, distribution and marketplace operations." },
+              { n: "01", t: "Origin",    d: `Started from humble beginnings in ${FOUNDED_YEAR} as a single distribution business in India.` },
+              { n: "02", t: "Evolution", d: `Since ${FOUNDED_YEAR} we have built marketplace, distribution, global trade and sustainability businesses. Each one operates at national scale.` },
+              { n: "03", t: "Today",     d: `An India-rooted company with ${countWord(OFFICES.length).toLowerCase()} offices across India, the Middle East, Asia Pacific, the Americas and Africa, powered by in-house technology across order management, distribution and marketplace operations.` },
             ].map((b) => (
               <div key={b.n} className="bg-ink p-10 md:p-12">
                 <div className="font-serif-display text-5xl text-accent">{b.n}</div>
@@ -68,44 +45,43 @@ export function AboutView() {
           of SMG's leadership are ready. */}
 
       {/* BY THE NUMBERS */}
-      <section className="bg-surface py-28 md:py-36">
+      <section className="bg-surface py-20 md:py-36">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 md:gap-y-24 lg:grid-cols-3 lg:gap-x-20">
+          <div className="grid grid-cols-1 gap-x-12 gap-y-12 sm:grid-cols-2 md:gap-y-24 lg:grid-cols-3 lg:gap-x-20">
             {[
               {
-                v: <Counter to={300} suffix="M+" />,
-                d: "Consumers reached through our distribution, marketplace and trading businesses.",
+                v: <Counter to={FIGURES.consumersReached.to} suffix={FIGURES.consumersReached.suffix} />,
+                d: "Consumers reached through our distribution, marketplace and global trade businesses.",
                 color: "text-[#d24f34]",
               },
               {
-                v: <Counter to={80} suffix="K+" />,
+                v: <Counter to={FIGURES.retailers.to} suffix={FIGURES.retailers.suffix} />,
                 d: "Active retailers connected across metro, regional and emerging markets.",
                 color: "text-[#d55155]",
               },
               {
-                v: <Counter prefix="₹" to={4000} suffix="Cr+" />,
-                d: "Annual revenue generated across the group’s integrated commerce network.",
+                v: <Counter to={FIGURES.manufacturers.to} suffix={FIGURES.manufacturers.suffix} />,
+                d: "Brand and manufacturer partners distributed across our network.",
                 color: "text-[#b48700]",
-                size: "text-[clamp(2.125rem,calc(4.25vw-10px),3.875rem)]",
               },
               {
-                v: <Counter to={300} suffix="K" />,
+                v: <Counter to={FIGURES.warehousingSqFt.to} suffix="K" />,
                 d: "Square feet of owned warehousing and operating infrastructure.",
                 color: "text-[#436ce0]",
               },
               {
-                v: <Counter to={15} suffix="+" />,
+                v: <Counter to={FIGURES.fulfilmentCentres.to} suffix={FIGURES.fulfilmentCentres.suffix} />,
                 d: "Fulfilment centres supporting dependable, high-volume movement of goods.",
                 color: "text-[#d24f34]",
               },
               {
-                v: <>9</>,
+                v: <>{OFFICES.length}</>,
                 d: "Global offices connecting India with markets across three continents.",
                 color: "text-[#3f8d68]",
               },
             ].map((s, i) => (
               <div key={i} className="max-w-sm">
-                <div className={`font-display font-medium leading-[0.92] tracking-[-0.045em] ${s.size ?? "text-[clamp(2.375rem,calc(5vw-10px),4.625rem)]"} ${s.color}`}>
+                <div className={`font-display font-medium leading-[0.92] tracking-[-0.045em] text-[clamp(2.375rem,calc(5vw-10px),4.625rem)] ${s.color}`}>
                   {s.v}
                 </div>
                 <p className="mt-7 max-w-[29ch] text-base leading-[1.45] text-ink md:text-lg">
