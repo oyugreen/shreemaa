@@ -7,37 +7,45 @@ import {
   ArrowUpRight,
   CheckCircle2,
   ChevronDown,
+  ExternalLink,
+  Phone,
 } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
+import { LinkedinIcon, InstagramIcon } from "@/components/icons/BrandIcons";
+import {
+  CONTACT,
+  OFFICES,
+  OFFICE_HOURS,
+  PARTNER_ONBOARDING_URL,
+  SOCIAL,
+  isSafeExternalUrl,
+} from "@/config/site";
+import { trackEvent } from "@/lib/analytics";
 
 const greetings = ["Hello.", "Namaste.", "Salaam.", "Vanakkam.", "Sat Sri Akaal.", "Kem Cho."];
 
+// One topic list for the marquee and the subject field. `id` is sent with the
+// message so each topic can be routed to its team's inbox.
 const inquiries = [
-  { id: "business", label: "Business", desc: "Distribution, marketplace ops, trading or trade." },
-  { id: "partnership", label: "Partnership", desc: "Manufacturing, brand or strategic alliances." },
-  { id: "career", label: "Career", desc: "Roles, internships and people inquiries." },
+  { id: "distribution", label: "Distribution" },
+  { id: "marketplace", label: "Marketplace" },
+  { id: "global-trade", label: "Global Trade / Exports" },
+  { id: "sustainability", label: "Sustainability" },
+  { id: "careers", label: "Careers" },
+  { id: "other", label: "Other" },
 ];
 
-type Office = {
-  city: string;
-  country: string;
-  role: string;
-  focus: string;
-  mapQuery: string;
-  address?: string;
-  hours?: string;
-  hq?: boolean;
-};
-
-const OFFICES: Office[] = [
-  { city: "Bhopal",    country: "India",     role: "Global Headquarters", focus: "Group leadership, strategy and operations",        mapQuery: "Shri Maa Group, Bhopal, Madhya Pradesh, India", address: "Shri Maa Group, Bhopal, Madhya Pradesh", hours: "Mon to Sat, 10:00 to 19:00 IST", hq: true },
-  { city: "Gurgaon",   country: "India",     role: "Corporate Office",    focus: "Corporate functions, partnerships and technology", mapQuery: "Enkay centre, Udyog vihar, phase 5, Sector 19, Gurugram, Haryana 122016", address: "Enkay Centre, Udyog Vihar Phase 5, Sector 19, Gurugram 122016", hours: "Mon to Sat, 10:00 to 19:00 IST" },
+const socials = [
+  ...(SOCIAL.linkedin ? [{ Icon: LinkedinIcon, href: SOCIAL.linkedin, label: "LinkedIn" }] : []),
+  ...(SOCIAL.instagram ? [{ Icon: InstagramIcon, href: SOCIAL.instagram, label: "Instagram" }] : []),
 ];
+
+const onboardingUrl = isSafeExternalUrl(PARTNER_ONBOARDING_URL) ? PARTNER_ONBOARDING_URL : "";
 
 const contactSchema = z.object({
   name: z.string().trim().min(2, "Please enter your full name").max(100),
-  company: z.string().trim().min(2, "Please enter your company").max(120),
+  company: z.string().trim().max(120),
   email: z.string().trim().email("Enter a valid email").max(200),
   phone: z
     .string()
@@ -52,7 +60,7 @@ type FieldErrors = Partial<Record<keyof z.infer<typeof contactSchema>, string>>;
 
 export function ContactView() {
   const [greetIdx, setGreetIdx] = useState(0);
-  const [type, setType] = useState("business");
+  const [type, setType] = useState(inquiries[0].id);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
 
@@ -87,6 +95,7 @@ export function ContactView() {
       return;
     }
     setErrors({});
+    trackEvent("generate_lead", { form: "contact", topic: type });
     setSubmitted(true);
     toast.success("Message sent. We will be in touch shortly.");
   }
@@ -130,16 +139,33 @@ export function ContactView() {
                   A brand looking to grow? A distributor ready for a new category? A buyer looking for reliable supply? Tell us what you need and the right SMG team will be in touch.
                 </p>
                 <div className="col-span-12 md:col-span-5 md:border-l md:border-ink/10 md:pl-6 space-y-3 text-sm">
-                  <a href="mailto:contact@shrimaa.com" className="flex items-center justify-between group">
-                    <span className="text-ink-soft uppercase tracking-[0.18em] text-[10px]">Email</span>
+                  <a href={`mailto:${CONTACT.email}`} className="flex min-h-11 items-center justify-between group">
+                    <span className="text-ink-soft uppercase tracking-[0.16em] text-[11px]">Email</span>
                     <span className="font-medium group-hover:text-accent transition-colors flex items-center gap-1">
-                      contact@shrimaa.com <ArrowUpRight className="h-3.5 w-3.5" />
+                      {CONTACT.email} <ArrowUpRight className="h-3.5 w-3.5" />
                     </span>
                   </a>
-                  <div className="flex items-center justify-between">
-                    <span className="text-ink-soft uppercase tracking-[0.18em] text-[10px]">Reply</span>
+                  {CONTACT.phone && (
+                    <a href={`tel:${CONTACT.phone.replace(/[^+\d]/g, "")}`} className="flex min-h-11 items-center justify-between group">
+                      <span className="text-ink-soft uppercase tracking-[0.16em] text-[11px]">Phone</span>
+                      <span className="font-medium group-hover:text-accent transition-colors flex items-center gap-1">
+                        <Phone className="h-3.5 w-3.5" /> {CONTACT.phone}
+                      </span>
+                    </a>
+                  )}
+                  <div className="flex min-h-11 items-center justify-between">
+                    <span className="text-ink-soft uppercase tracking-[0.16em] text-[11px]">Reply</span>
                     <span className="font-medium">Within 1 business day</span>
                   </div>
+                  {onboardingUrl && (
+                    <a href={onboardingUrl} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center justify-between group">
+                      <span className="text-ink-soft uppercase tracking-[0.16em] text-[11px]">Partners</span>
+                      <span className="font-medium group-hover:text-accent transition-colors flex items-center gap-1">
+                        Partner KYC / Onboarding <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                        <span className="sr-only">(opens in a new tab)</span>
+                      </span>
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
@@ -155,7 +181,7 @@ export function ContactView() {
           >
             {Array.from({ length: 2 }).map((_, copy) => (
               <div key={copy} className="flex items-center gap-12">
-                {["Distribution", "Marketplace", "Global Trade", "Commerce", "Partnerships", "Careers"].map((w, i) => (
+                {inquiries.filter((q) => q.id !== "other").map((q) => q.label).map((w, i) => (
                   <span key={`${copy}-${i}`} className="flex items-center gap-12">
                     <span className={i % 2 === 0 ? "text-ink" : "text-ink/30 font-serif-display italic"}>
                       {w}
@@ -179,36 +205,48 @@ export function ContactView() {
           </div>
 
           <div className="grid grid-cols-12 gap-6 lg:gap-10">
-            {/* Office addresses */}
-            <div className="col-span-12 lg:col-span-5">
+            {/* Offices — the same list as About, Gurgaon first */}
+            <div id="offices" className="col-span-12 scroll-mt-24 lg:col-span-5">
               <div className="border-t border-ink/10">
                 {OFFICES.filter((o) => o.address).map((o) => (
                   <a
                     key={o.city}
-                    href={`https://www.google.com/maps?q=${encodeURIComponent(o.mapQuery)}`}
+                    href={`https://www.google.com/maps?q=${encodeURIComponent(o.mapQuery ?? o.address!)}`}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="group block border-b border-ink/10 py-6"
                   >
                     <div className="flex items-center justify-between gap-4">
                       <div className="font-display text-3xl font-semibold tracking-tight text-accent md:text-4xl">
                         {o.city}
                       </div>
-                      <ArrowUpRight className="h-5 w-5 text-ink-soft transition-colors group-hover:text-accent" />
+                      <span className="inline-flex items-center gap-1 text-xs text-ink-soft transition-colors group-hover:text-accent">
+                        Map <ExternalLink className="h-4 w-4" aria-hidden />
+                        <span className="sr-only">(opens Google Maps in a new tab)</span>
+                      </span>
                     </div>
+                    <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-ink-soft">{o.role}</p>
                     <p className="mt-2 text-sm text-ink-soft">{o.address}</p>
                   </a>
                 ))}
               </div>
+              <ul className="mt-2 grid grid-cols-2 gap-x-6 border-b border-ink/10 pb-4 text-sm">
+                {OFFICES.filter((o) => !o.address).map((o) => (
+                  <li key={o.city} className="py-2">
+                    <span className="font-medium text-ink">{o.city}</span>
+                    <span className="text-ink-soft">, {o.country}</span>
+                  </li>
+                ))}
+              </ul>
 
               <div className="mt-8 space-y-1 text-sm">
                 <a
-                  href="mailto:contact@shrimaa.com"
+                  href={`mailto:${CONTACT.email}`}
                   className="text-lg font-medium hover:text-accent transition-colors"
                 >
-                  contact@shrimaa.com
+                  {CONTACT.email}
                 </a>
-                <p className="text-ink-soft">{OFFICES[0].hours}</p>
+                <p className="text-ink-soft">{OFFICE_HOURS}</p>
               </div>
             </div>
 
@@ -248,10 +286,10 @@ export function ContactView() {
                     className="space-y-6"
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FloatField label="Full name" name="name" type="text" error={errors.name} />
-                      <FloatField label="Company" name="company" type="text" error={errors.company} />
-                      <FloatField label="Email" name="email" type="email" error={errors.email} />
-                      <FloatField label="Phone" name="phone" type="tel" error={errors.phone} />
+                      <FloatField label="Full name" name="name" type="text" autoComplete="name" error={errors.name} />
+                      <FloatField label="Company (optional)" name="company" type="text" autoComplete="organization" required={false} error={errors.company} />
+                      <FloatField label="Email" name="email" type="email" autoComplete="email" error={errors.email} />
+                      <FloatField label="Phone" name="phone" type="tel" autoComplete="tel" error={errors.phone} />
                     </div>
                     <FloatSelect
                       label="Subject"
@@ -270,7 +308,7 @@ export function ContactView() {
                       <div className="text-xs text-ink-soft">
                         Subject:{" "}
                         <span className="font-medium text-ink">{activeInquiry.label}</span>{" "}
-                        · All fields required
+                        · Company is optional
                       </div>
                       <button
                         type="submit"
@@ -291,11 +329,12 @@ export function ContactView() {
         </div>
       </section>
 
-      {/* SECTION 04 — Compact social handoff */}
+      {/* SECTION 04 — Compact social handoff, shown once a social URL is set */}
+      {socials.length > 0 && (
       <section className="border-b border-white/10 bg-ink py-9 text-white md:py-10">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-6 lg:px-10">
           <div className="flex min-w-0 items-baseline gap-3">
-            <div className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">
+            <div className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/55">
               Connect
             </div>
             <div className="text-lg font-medium tracking-tight text-white/80 md:text-xl">
@@ -304,14 +343,13 @@ export function ContactView() {
             </div>
           </div>
           <div className="flex gap-2">
-            {[
-              { Icon: Mail, href: "mailto:contact@shrimaa.com", label: "Email" },
-            ].map(({ Icon, href, label }) => (
+            {[{ Icon: Mail, href: `mailto:${CONTACT.email}`, label: "Email" }, ...socials].map(({ Icon, href, label }) => (
               <a
                 key={label}
                 href={href}
                 aria-label={label}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:border-brand hover:bg-brand hover:text-white"
+                {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:border-brand hover:bg-brand hover:text-white"
               >
                 <Icon className="h-3.5 w-3.5" />
               </a>
@@ -319,6 +357,7 @@ export function ContactView() {
           </div>
         </div>
       </section>
+      )}
     </>
   );
 }
@@ -342,7 +381,7 @@ function FloatSelect({
     <div className="relative">
       <label
         htmlFor={`contact-${name}`}
-        className="absolute left-0 top-0 pointer-events-none text-[10px] uppercase tracking-[0.22em] text-ink-soft"
+        className="absolute left-0 top-0 pointer-events-none text-[11px] uppercase tracking-[0.18em] text-ink-soft"
       >
         {label}
       </label>
@@ -373,11 +412,15 @@ function FloatField({
   name,
   type,
   error,
+  autoComplete,
+  required = true,
 }: {
   label: string;
   name: string;
   type: string;
   error?: string;
+  autoComplete?: string;
+  required?: boolean;
 }) {
   const [focused, setFocused] = useState(false);
   const [val, setVal] = useState("");
@@ -391,9 +434,10 @@ function FloatField({
   return (
     <div className="relative">
       <label
+        htmlFor={`contact-${name}`}
         className={`absolute left-0 pointer-events-none transition-all duration-200 ${
           float
-            ? "top-0 text-[10px] uppercase tracking-[0.22em] text-ink-soft"
+            ? "top-0 text-[11px] uppercase tracking-[0.18em] text-ink-soft"
             : "top-6 text-base text-ink-soft"
         }`}
       >
@@ -401,9 +445,10 @@ function FloatField({
       </label>
       {isTextarea ? (
         <textarea
+          id={`contact-${name}`}
           name={name}
           rows={4}
-          required
+          required={required}
           aria-invalid={!!error}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
@@ -412,9 +457,11 @@ function FloatField({
         />
       ) : (
         <input
+          id={`contact-${name}`}
           name={name}
           type={type}
-          required
+          autoComplete={autoComplete}
+          required={required}
           aria-invalid={!!error}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}

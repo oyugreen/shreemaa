@@ -1,8 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, Instrument_Serif } from "next/font/google";
+import Script from "next/script";
 import { Toaster } from "sonner";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { SITE_URL } from "@/config/site";
+import { GA_ID } from "@/lib/analytics";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,10 +30,8 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
-const siteUrl = "https://www.shrimaa.com";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Shri Maa Group · The Launchpad for Global Brands",
     template: "%s · Shri Maa Group",
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
     description: "The launchpad for global brands in India.",
     type: "website",
     siteName: "Shri Maa Group",
-    url: siteUrl,
+    url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
@@ -69,6 +70,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="flex-1">{children}</main>
         <SiteFooter />
         <Toaster />
+        {GA_ID && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+            <Script id="ga4" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

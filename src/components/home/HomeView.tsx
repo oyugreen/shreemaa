@@ -10,13 +10,14 @@ import { ScaleOffersSection } from "@/components/home/ScaleOffersSection";
 import { CommandHeroExperience } from "@/components/command-hero/CommandHeroExperience";
 import { HeroCopy } from "@/components/command-hero/HeroCopy";
 import { HOME_COPY } from "@/components/command-hero/config";
+import { BUSINESS_COUNT_WORD, BUSINESSES, FIGURES } from "@/config/site";
 
 const brands = ["Amazon", "Flipkart", "Samsung", "Xiaomi", "OPPO", "vivo", "realme", "Lenovo", "ASUS", "boAt", "Croma", "Reliance Digital"];
 
 export function HomeView() {
   return (
     <>
-      {/* HERO: particles → rings → "Five businesses. One commerce engine." */}
+      {/* HERO: particles → rings → "Four businesses. One commerce engine." */}
       <CommandHeroExperience
         copy={HOME_COPY}
         hero={
@@ -34,14 +35,15 @@ export function HomeView() {
             }
             description={
               <>
+                {/* Non-breaking hyphen keeps "e‑commerce" on one line on phones. */}
                 A global commerce network, helping the world&apos;s leading brands launch, scale and operate across
-                e-commerce, retail, distribution and international trade.
+                e&#8209;commerce, retail, distribution and international trade.
               </>
             }
             actions={
               <>
                 <Link
-                  href="/businesses/marketplace-operations"
+                  href="/businesses"
                   className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-ink transition hover:bg-white/90"
                 >
                   Explore businesses <ArrowRight className="h-4 w-4" />
@@ -61,7 +63,7 @@ export function HomeView() {
       {/* TRUSTED BY */}
       <section className="py-14 bg-surface-2 border-y border-line overflow-hidden">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 mb-8">
-          <p className="text-center text-[10px] uppercase tracking-[0.28em] text-ink-soft font-medium">
+          <p className="text-center text-[11px] uppercase tracking-[0.24em] text-ink-soft font-medium">
             Trusted by global brands & India&apos;s largest marketplaces
           </p>
         </div>
@@ -100,34 +102,85 @@ export function HomeView() {
   );
 }
 
+// Milestones as supplied by SMG (Oct 2026 change list). Brand names appear in
+// copy only; showing their logos needs each brand's permission.
 const eras = [
   {
     year: "1997",
     tag: "Foundations",
-    title: "A trading house is born.",
-    body: "SMG begins in Bhopal, building the retailer and supplier relationships that still anchor the group today.",
+    title: "A distribution house is born.",
+    body: "Shri Maa Group is founded as a distribution partner for Unilever.",
     metric: "Year one",
   },
   {
-    year: "2008",
-    tag: "Distribution",
-    title: "Scale across India.",
-    body: "Distribution expands to 80,000+ retailers and 600+ partners, making SMG one of central India's most trusted networks.",
-    metric: "80K+ retailers",
+    year: "2004",
+    tag: "A distribution house",
+    title: "Many brands, one network.",
+    body: "SMG starts building a multi-brand distribution house.",
+    metric: "Multi-brand",
+  },
+  {
+    year: "2004–10",
+    tag: "Partner to multinationals",
+    title: "Trusted by global brands.",
+    body: "Samsung, Airtel, Unilever, Britannia and Videocon join. SMG posts the highest Airtel revenue in Central India and the highest HUL revenue in West India.",
+    metric: "5 multinationals",
+  },
+  {
+    year: "2010",
+    tag: "Samsung",
+    title: "West India's largest for Samsung.",
+    body: "SMG becomes Samsung's biggest mobile and consumer durables distributor in West India.",
+    metric: "No. 1 in West India",
+  },
+  {
+    year: "2015",
+    tag: "Reliance Jio",
+    title: "India's top Jio distributor.",
+    body: "SMG becomes Jio's top distributor in India. It sells 5 lakh JioPhones in 12 hours.",
+    metric: "5 lakh phones in 12 hrs",
   },
   {
     year: "2017",
-    tag: "Digital commerce",
-    title: "Built for marketplaces.",
-    body: "We move online, becoming a top operator on Amazon, Flipkart and the next generation of Indian marketplaces.",
-    metric: "55K+ orders / mo",
+    tag: "Consumer electronics",
+    title: "Xiaomi and beyond.",
+    body: "Xiaomi joins, and SMG takes the highest market share in West India. Voltas, LG and Haier follow.",
+    metric: "Highest share, West India",
+  },
+  {
+    year: "2020",
+    tag: "Beyond mobiles",
+    title: "New categories, national reach.",
+    body: "SMG becomes a DCA for HMEL, partners with Tata Croma on retail expansion, and becomes boAt's national distributor, later named boAt's top partner in India.",
+    metric: "boAt's top partner",
+  },
+  {
+    year: "2023",
+    tag: "Transsion Group",
+    title: "A new portfolio partner.",
+    body: "Transsion Group joins the portfolio.",
+    metric: "Transsion",
+  },
+  {
+    year: "2023",
+    tag: "Oyu Green",
+    title: "Climate, at scale.",
+    body: "Oyu Green starts developing carbon projects across Africa and India.",
+    metric: "Africa & India",
   },
   {
     year: "2024",
-    tag: "Global trade",
-    title: "Across borders.",
-    body: "Rio World and OYU Green extend the group into international trade and climate solutions for the next decade of growth.",
-    metric: "Cross-border",
+    tag: "Digital commerce",
+    title: "Built for marketplaces.",
+    body: "SMG takes its brands online across Amazon and Flipkart, and becomes India's leader in marketplace commerce.",
+    metric: `${FIGURES.marketplaceOrdersPerMonth.text} orders / mo today`,
+  },
+  {
+    year: "2025",
+    tag: "Across borders",
+    title: "Exporting India.",
+    body: "SMG takes Indian-sourced smartphones and electronics to the UAE, Hong Kong and Africa.",
+    metric: "UAE · Hong Kong · Africa",
   },
 ];
 
@@ -145,7 +198,7 @@ function WhoWeAre() {
   const era = eras[active];
 
   return (
-    <section className="relative overflow-hidden bg-ink text-white py-28 md:py-36">
+    <section className="relative overflow-hidden bg-ink text-white py-20 md:py-36">
       {/* ambient glows */}
       <div className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full bg-brand/30 blur-[140px]" />
       <div className="absolute -bottom-40 right-0 h-[480px] w-[480px] rounded-full bg-brand-3/20 blur-[160px]" />
@@ -188,25 +241,28 @@ function WhoWeAre() {
             </h2>
           </div>
           <p className="md:max-w-xs text-white/65 leading-relaxed">
-            From one distribution business in Bhopal to five businesses connecting brands and markets, SMG has grown with the way India buys and sells. Founded in 1997, the group now spans e-commerce, distribution, trading, exports and sustainability.
+            From one distribution business in Central India to {BUSINESS_COUNT_WORD.toLowerCase()} businesses connecting brands and markets, SMG has grown with the way India buys and sells. Founded in 1997, the group now spans e&#8209;commerce, distribution, global trade and exports, and sustainability.
           </p>
         </div>
 
         {/* Interactive eras */}
-        <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
+        <div className="mt-12 md:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14">
           {/* Era picker */}
           <div className="lg:col-span-5">
-            <ul>
+            <ul className="-mx-6 flex gap-2 overflow-x-auto px-6 pb-2 [scrollbar-width:none] lg:mx-0 lg:block lg:overflow-visible lg:p-0">
               {eras.map((e, i) => {
                 const isActive = active === i;
                 return (
-                  <li key={e.year}>
+                  <li key={`${e.year}-${e.tag}`} className="shrink-0">
                     <button
                       type="button"
                       onMouseEnter={() => setActive(i)}
                       onFocus={() => setActive(i)}
                       onClick={() => setActive(i)}
-                      className="group w-full text-left py-5 flex items-center gap-6 transition-colors"
+                      aria-pressed={isActive}
+                      className={`group flex min-h-11 items-center gap-3 rounded-full border px-4 text-left transition-colors lg:w-full lg:gap-6 lg:rounded-none lg:border-0 lg:px-0 lg:py-2.5 ${
+                        isActive ? "border-accent/60" : "border-white/15"
+                      }`}
                     >
                       <span
                         className={`text-sm font-mono tabular-nums transition-colors ${isActive ? "text-accent" : "text-white/40 group-hover:text-white/70"
@@ -215,7 +271,7 @@ function WhoWeAre() {
                         {e.year}
                       </span>
                       <span
-                        className={`relative flex-1 text-2xl md:text-3xl font-display tracking-tight transition-all ${isActive ? "text-white translate-x-1" : "text-white/55 group-hover:text-white/85"
+                        className={`relative flex-1 whitespace-nowrap text-sm font-display tracking-tight transition-all lg:text-xl ${isActive ? "text-white lg:translate-x-1" : "text-white/55 group-hover:text-white/85"
                           }`}
                       >
                         {e.tag}
@@ -224,7 +280,7 @@ function WhoWeAre() {
                         aria-hidden
                         animate={{ width: isActive ? 56 : 12, opacity: isActive ? 1 : 0.3 }}
                         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        className="h-px bg-brand-gradient"
+                        className="hidden h-px bg-brand-gradient lg:block"
                       />
                     </button>
                   </li>
@@ -234,7 +290,7 @@ function WhoWeAre() {
 
             <Link
               href="/about"
-              className="mt-10 inline-flex items-center gap-2 text-sm font-semibold border-b border-white/30 pb-1 hover:border-brand hover:text-accent transition-colors"
+              className="mt-6 lg:mt-10 inline-flex items-center gap-2 text-sm font-semibold border-b border-white/30 pb-1 hover:border-brand hover:text-accent transition-colors"
             >
               More about SMG <ArrowUpRight className="h-4 w-4" />
             </Link>
@@ -242,11 +298,11 @@ function WhoWeAre() {
 
           {/* Era detail card */}
           <div className="lg:col-span-7">
-            <div className="relative rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-8 md:p-12 min-h-[360px] overflow-hidden">
+            <div className="relative rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 md:p-12 min-h-[300px] md:min-h-[360px] overflow-hidden">
               <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-brand-gradient opacity-20 blur-3xl" />
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={era.year}
+                  key={active}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
@@ -275,14 +331,14 @@ function WhoWeAre() {
             {/* Mini stats strip */}
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10 rounded-2xl overflow-hidden border border-white/10">
               {[
-                ["30 yrs", "In market"],
-                ["5", "Businesses"],
+                [`${FIGURES.yearsInBusiness.to} yrs`, "In market"],
+                [String(BUSINESSES.length), "Businesses"],
                 ["Pan-India", "Footprint"],
                 ["Global", "Reach"],
               ].map(([n, l]) => (
                 <div key={l} className="bg-ink p-5">
                   <div className="text-xl md:text-2xl font-display font-semibold tracking-tight">{n}</div>
-                  <div className="text-[10px] uppercase tracking-[0.18em] text-white/50 mt-1">{l}</div>
+                  <div className="text-[11px] uppercase tracking-[0.16em] text-white/60 mt-1">{l}</div>
                 </div>
               ))}
             </div>

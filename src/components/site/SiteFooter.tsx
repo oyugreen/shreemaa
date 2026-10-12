@@ -3,36 +3,65 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { ArrowUpRight, Mail } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Mail, Phone } from "lucide-react";
 import { toast } from "sonner";
+import { LinkedinIcon, InstagramIcon } from "@/components/icons/BrandIcons";
+import {
+  BUSINESSES,
+  COMPANY_NAME,
+  CONTACT,
+  FIGURES,
+  LOGIN_LINKS,
+  OFFICES,
+  PARTNER_ONBOARDING_URL,
+  SOCIAL,
+  isSafeExternalUrl,
+} from "@/config/site";
+import { trackEvent } from "@/lib/analytics";
 
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-ink";
 
-// LinkedIn, Instagram and the website link are held back until their official
-// URLs exist; dead links are worse than none.
-const socials = [{ Icon: Mail, label: "Email", href: "mailto:contact@shrimaa.com" }];
+// Social links appear only once their official URLs are set in config/site.
+const socials = [
+  { Icon: Mail, label: "Email", href: `mailto:${CONTACT.email}` },
+  ...(SOCIAL.linkedin ? [{ Icon: LinkedinIcon, label: "LinkedIn", href: SOCIAL.linkedin }] : []),
+  ...(SOCIAL.instagram ? [{ Icon: InstagramIcon, label: "Instagram", href: SOCIAL.instagram }] : []),
+];
 
-const columns: { title: string; links: { label: string; href: string; external?: boolean }[] }[] = [
+type FooterLink = { label: string; href: string; external?: boolean };
+
+const onboardingUrl = isSafeExternalUrl(PARTNER_ONBOARDING_URL) ? PARTNER_ONBOARDING_URL : "";
+
+// Mirrors the main navigation: Home, About, Businesses, Work with us, Contact.
+const columns: { title: string; links: FooterLink[] }[] = [
   {
     title: "Businesses",
     links: [
-      { label: "Marketplace", href: "/businesses/marketplace-operations" },
-      { label: "Distribution", href: "/businesses/distribution-network" },
-      { label: "Global Trade", href: "/businesses/global-trade" },
-      { label: "Sustainability", href: "https://www.oyugreen.com", external: true },
+      { label: "All businesses", href: "/businesses" },
+      ...BUSINESSES.map((b) => ({ label: b.shortName, href: b.href, external: b.external })),
     ],
   },
   {
     title: "Company",
     links: [
+      { label: "Home", href: "/" },
       { label: "About", href: "/about" },
-      { label: "Work with us", href: "/careers" },
+      { label: "Life at SMG", href: "/careers" },
       { label: "Open roles", href: "/jobs" },
       { label: "Contact", href: "/contact" },
+      ...(onboardingUrl ? [{ label: "Partner KYC / Onboarding", href: onboardingUrl, external: true }] : []),
+      ...LOGIN_LINKS.filter((l) => isSafeExternalUrl(l.href)).map((l) => ({ ...l, external: true })),
     ],
   },
 ];
+
+const legal: FooterLink[] = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Use", href: "/terms" },
+];
+
+const linkClass = `inline-flex min-h-11 items-center gap-1.5 text-sm text-white/80 transition-colors duration-200 hover:text-white ${focusRing}`;
 
 export function SiteFooter() {
   const pathname = usePathname();
@@ -41,6 +70,7 @@ export function SiteFooter() {
 
   function handleNewsletterSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    trackEvent("newsletter_signup");
     setNewsletterEmail("");
     toast.success("You are on the list. Watch your inbox.");
   }
@@ -105,7 +135,7 @@ export function SiteFooter() {
                 </div>
                 <h2 className="mt-[clamp(14px,2vw,20px)] text-pretty font-display text-[clamp(30px,4.2vw,56px)] font-semibold leading-[1.04] tracking-[-0.03em]">
                   Let&apos;s put your brand in front of{" "}
-                  <span className="font-serif-display italic text-accent">300 million people.</span>
+                  <span className="font-serif-display italic text-accent">{FIGURES.consumersReached.prose} people.</span>
                 </h2>
               </div>
               <div className="flex min-w-0 flex-[1_1_330px] flex-col items-start gap-5">
@@ -130,26 +160,34 @@ export function SiteFooter() {
         {/* Band 2 — Contact + link columns */}
         <div className="flex flex-wrap gap-[clamp(32px,4vw,48px)] py-[clamp(40px,5vw,56px)]">
           <div className="min-w-0 flex-[1_1_230px]">
-            <div className="mb-[18px] text-[10px] uppercase tracking-[0.22em] text-white/45">
-              Headquarters
+            <div className="mb-3 text-[11px] uppercase tracking-[0.22em] text-white/55">
+              Offices
             </div>
             <p className="text-sm leading-[1.7] text-white/80">
-              Bhopal, Madhya Pradesh
+              {OFFICES.filter((o) => o.country === "India").map((o) => o.city).join(" · ")}
               <br />
-              India
+              {OFFICES.filter((o) => o.country !== "India").map((o) => o.city).join(" · ")}
             </p>
-            <a
-              href="mailto:contact@shrimaa.com"
-              className={`mt-4 inline-flex items-center gap-1.5 text-sm text-white/80 transition-colors duration-200 hover:text-white ${focusRing}`}
-            >
-              contact@shrimaa.com <ArrowUpRight className="h-[13px] w-[13px] shrink-0" />
-            </a>
-            <div className="mt-7 flex flex-wrap gap-2">
+            <Link href="/contact#offices" className={linkClass}>
+              All {OFFICES.length} offices <ArrowUpRight className="h-[13px] w-[13px] shrink-0" />
+            </Link>
+            <div className="flex flex-col">
+              <a href={`mailto:${CONTACT.email}`} className={linkClass}>
+                {CONTACT.email}
+              </a>
+              {CONTACT.phone && (
+                <a href={`tel:${CONTACT.phone.replace(/[^+\d]/g, "")}`} className={linkClass}>
+                  <Phone className="h-[13px] w-[13px] shrink-0" /> {CONTACT.phone}
+                </a>
+              )}
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2">
               {socials.map((s) => (
                 <a
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
+                  {...(s.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   className={`flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.14] text-white/75 transition-colors duration-200 hover:border-white/40 hover:text-white ${focusRing}`}
                 >
                   <s.Icon className="h-[15px] w-[15px]" />
@@ -161,29 +199,13 @@ export function SiteFooter() {
           <div className="grid min-w-0 flex-[2_1_480px] grid-cols-[repeat(auto-fit,minmax(148px,1fr))] gap-[clamp(24px,3vw,40px)]">
             {columns.map((col) => (
               <div key={col.title} className="min-w-0">
-                <div className="mb-[18px] text-[10px] uppercase tracking-[0.22em] text-white/45">
+                <div className="mb-3 text-[11px] uppercase tracking-[0.22em] text-white/55">
                   {col.title}
                 </div>
-                <ul className="m-0 flex list-none flex-col gap-[11px] p-0">
+                <ul className="m-0 flex list-none flex-col p-0">
                   {col.links.map((l) => (
                     <li key={l.label}>
-                      {l.external ? (
-                        <a
-                          href={l.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`text-sm text-white/80 transition-colors duration-200 hover:text-white ${focusRing}`}
-                        >
-                          {l.label}
-                        </a>
-                      ) : (
-                        <Link
-                          href={l.href}
-                          className={`text-sm text-white/80 transition-colors duration-200 hover:text-white ${focusRing}`}
-                        >
-                          {l.label}
-                        </Link>
-                      )}
+                      <FooterAnchor link={l} />
                     </li>
                   ))}
                 </ul>
@@ -194,7 +216,14 @@ export function SiteFooter() {
 
         {/* Band 3 — Legal bar */}
         <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-white/10 py-5">
-          <p className="text-xs text-white/45">© {new Date().getFullYear()} Shri Maa Group. All rights reserved.</p>
+          <p className="text-xs text-white/55">© {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved.</p>
+          <ul className="m-0 flex list-none flex-wrap gap-x-6 p-0">
+            {legal.map((l) => (
+              <li key={l.href}>
+                <FooterAnchor link={l} />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
@@ -210,5 +239,22 @@ export function SiteFooter() {
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterAnchor({ link }: { link: FooterLink }) {
+  if (link.external) {
+    return (
+      <a href={link.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+        {link.label}
+        <ExternalLink className="h-3 w-3 shrink-0 text-white/50" aria-hidden />
+        <span className="sr-only">(opens in a new tab)</span>
+      </a>
+    );
+  }
+  return (
+    <Link href={link.href} className={linkClass}>
+      {link.label}
+    </Link>
   );
 }

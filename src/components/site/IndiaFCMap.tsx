@@ -273,7 +273,7 @@ export function IndiaFCMap() {
               <div className="text-sm font-semibold mt-0.5">{p.loc.city}</div>
               <div className="mt-2 flex flex-wrap gap-1">
                 {p.loc.fcs.map((fc) => (
-                  <span key={fc.code} className="text-[10px] bg-white/15 px-1.5 py-0.5 rounded">
+                  <span key={fc.code} className="text-[11px] bg-white/15 px-1.5 py-0.5 rounded">
                     {fc.code}
                   </span>
                 ))}
@@ -284,7 +284,7 @@ export function IndiaFCMap() {
       })()}
 
 
-      <div className="absolute bottom-3 right-3 text-[9px] uppercase tracking-[0.18em] text-ink-soft/70 bg-white/70 backdrop-blur border border-line px-2 py-1 rounded-md">
+      <div className="absolute bottom-3 right-3 text-[11px] uppercase tracking-[0.18em] text-ink-soft/70 bg-white/70 backdrop-blur border border-line px-2 py-1 rounded-md">
         Scroll · Drag
       </div>
     </div>

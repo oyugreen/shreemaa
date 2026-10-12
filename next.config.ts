@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // Exports is part of Global Trade (Rio World); there is no separate page.
+      { source: "/businesses/exports", destination: "/businesses/global-trade", permanent: true },
+      // Add 301s for the old Wix site's URLs here once that URL list is exported.
+    ];
+  },
 };
 
 export default nextConfig;

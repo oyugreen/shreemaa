@@ -13,6 +13,7 @@ import {
   Database,
 } from "lucide-react";
 import { Counter } from "@/components/Counter";
+import { FIGURES } from "@/config/site";
 import { HeroPortalGrid } from "@/components/home/hero-portal-grid/HeroPortalGrid";
 import amazonAppLogo from "@/assets/marketplace-logos/amazon-app.svg";
 import blinkitAppLogo from "@/assets/marketplace-logos/blinkit-app.png";
@@ -164,11 +165,11 @@ export function MarketplaceView() {
               </div>
               <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
                 <div className="rounded-lg bg-white/[0.06] p-2.5 border border-white/10">
-                  <div className="text-[10px] text-white/50 font-medium">Monthly Orders</div>
-                  <div className="text-lg font-bold text-accent">60K+</div>
+                  <div className="text-[11px] text-white/60 font-medium">Monthly Orders</div>
+                  <div className="text-lg font-bold text-accent">{FIGURES.marketplaceOrdersPerMonth.text}</div>
                 </div>
                 <div className="rounded-lg bg-white/[0.06] p-2.5 border border-white/10">
-                  <div className="text-[10px] text-white/50 font-medium">On-Time Dispatch</div>
+                  <div className="text-[11px] text-white/60 font-medium">On-Time Dispatch</div>
                   <div className="text-lg font-bold text-white">99.2%</div>
                 </div>
               </div>
@@ -188,7 +189,7 @@ export function MarketplaceView() {
                   />
                   <div>
                     <div className="text-xs font-bold text-white">{m.name}</div>
-                    <div className="text-[10px] text-white/50">{m.subtitle}</div>
+                    <div className="text-[11px] text-white/60">{m.subtitle}</div>
                   </div>
                 </div>
               ))}
@@ -199,7 +200,7 @@ export function MarketplaceView() {
           <div className="mt-16 text-center">
             <div className="mx-auto grid max-w-4xl grid-cols-2 gap-6 md:grid-cols-4">
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-                <div className="text-3xl font-bold tracking-tight text-brand-gradient lg:text-4xl"><Counter to={60} suffix="K+" /></div>
+                <div className="text-3xl font-bold tracking-tight text-brand-gradient lg:text-4xl"><Counter to={FIGURES.marketplaceOrdersPerMonth.to} suffix={FIGURES.marketplaceOrdersPerMonth.suffix} /></div>
                 <div className="mt-1.5 text-xs font-medium leading-snug text-white/60">Orders fulfilled<br />every month</div>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">

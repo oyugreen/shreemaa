@@ -1,21 +1,23 @@
 import type { MetadataRoute } from "next";
-
-const BASE_URL = "https://www.shrimaa.com";
+import { SITE_URL } from "@/config/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     "/",
     "/about",
-    "/careers",
-    "/jobs",
-    "/contact",
+    "/businesses",
     "/businesses/marketplace-operations",
     "/businesses/distribution-network",
     "/businesses/global-trade",
+    "/careers",
+    "/jobs",
+    "/contact",
+    "/privacy",
+    "/terms",
   ];
 
   return paths.map((path) => ({
-    url: `${BASE_URL}${path}`,
+    url: `${SITE_URL}${path}`,
     changeFrequency: "weekly",
     lastModified: new Date(),
   }));

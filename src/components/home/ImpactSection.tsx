@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Counter } from "@/components/Counter";
+import { FIGURES, FOUNDED_YEAR } from "@/config/site";
+
+const { retailers, distributors, manufacturers, warehousingSqFt, consumersReached } = FIGURES;
 
 const statRail = [
-  { value: <Counter to={80000} suffix="+" />, label: "Retailers in network" },
-  { value: <Counter to={600} suffix="+" />, label: "Distribution partners" },
-  { value: <Counter to={100} suffix="+" />, label: "Manufacturers" },
-  { value: <Counter to={150} suffix="K sq ft" />, label: "Infrastructure" },
+  { value: <Counter to={retailers.to} suffix={retailers.suffix} />, label: "Retailers in network" },
+  { value: <Counter to={distributors.to} suffix={distributors.suffix} />, label: "Distribution partners" },
+  { value: <Counter to={manufacturers.to} suffix={manufacturers.suffix} />, label: "Manufacturers" },
+  { value: <Counter to={warehousingSqFt.to} suffix={warehousingSqFt.suffix} />, label: "Owned warehousing" },
 ];
 
 const cellBorders = [
@@ -18,7 +21,7 @@ const cellBorders = [
 
 export function ImpactSection() {
   return (
-    <section className="relative overflow-hidden bg-[oklch(0.975_0.008_75)] text-ink pt-28">
+    <section className="relative overflow-hidden bg-[oklch(0.975_0.008_75)] text-ink pt-20 md:pt-28">
       {/* Horizon field (decorative dot halftone) */}
       <div
         aria-hidden
@@ -53,7 +56,7 @@ export function ImpactSection() {
           </div>
           <div className="lg:col-span-6 lg:pt-2">
             <p className="text-[17px] leading-[1.7] text-ink-soft max-w-[46ch]">
-              Since 1997, SMG has built the reach to move products across India and the operating
+              Since {FOUNDED_YEAR}, SMG has built the reach to move products across India and the operating
               strength to back it up. From marketplaces to retail distribution and global trade, our
               businesses turn demand into sales at scale.
             </p>
@@ -89,7 +92,7 @@ export function ImpactSection() {
                 WebkitBackgroundClip: "text",
               }}
             >
-              <Counter to={300} suffix="M+" />
+              <Counter to={consumersReached.to} suffix={consumersReached.suffix} />
             </div>
             <div className="mt-[18px] text-xs uppercase tracking-[0.24em] text-[oklch(0.50_0.01_60)] font-semibold">
               Consumers reached every year
@@ -100,7 +103,7 @@ export function ImpactSection() {
               &ldquo;Coverage is the product.&rdquo;
             </div>
             <div className="mt-3 text-xs text-[oklch(0.55_0.01_60)] tracking-[0.04em]">
-              Operating principle, since 1997
+              Operating principle, since {FOUNDED_YEAR}
             </div>
           </div>
         </div>
@@ -110,10 +113,10 @@ export function ImpactSection() {
           {statRail.map((s, i) => (
             <div
               key={s.label}
-              className={`pt-[30px] px-5 pb-[88px] border-[oklch(0.88_0.012_75)] ${cellBorders[i]}`}
+              className={`pt-[30px] px-5 pb-12 md:pb-[88px] border-[oklch(0.88_0.012_75)] ${cellBorders[i]}`}
             >
               <div className="font-display text-[34px] font-bold tracking-[-0.035em]">{s.value}</div>
-              <div className="mt-2.5 text-[10.5px] uppercase tracking-[0.2em] text-[oklch(0.50_0.01_60)] font-semibold">
+              <div className="mt-2.5 text-xs uppercase tracking-[0.16em] text-[oklch(0.45_0.01_60)] font-semibold">
                 {s.label}
               </div>
             </div>

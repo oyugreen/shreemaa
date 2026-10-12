@@ -4,11 +4,14 @@ import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import Image, { type StaticImageData } from "next/image";
-import { ArrowUpRight, ShoppingBag, Truck, Globe2, Leaf, type LucideIcon } from "lucide-react";
+import { ArrowUpRight, ExternalLink, ShoppingBag, Truck, Globe2, Leaf, type LucideIcon } from "lucide-react";
 import marketplaceImg from "@/assets/online-shopping.png";
 import distributionImg from "@/assets/india-distribution.png";
 import exportImg from "@/assets/global-logistics.png";
 import oyuImg from "@/assets/tea-sustainability.png";
+import { BUSINESSES, BUSINESS_COUNT_WORD, FIGURES, FOUNDED_YEAR, OFFICES, OYU_GREEN_URL } from "@/config/site";
+
+const total = String(BUSINESSES.length).padStart(2, "0");
 
 type Card = {
   key: string;
@@ -33,11 +36,11 @@ const cards: Card[] = [
     key: "marketplace",
     href: "/businesses/marketplace-operations",
     dark: true,
-    badge: "01/04",
+    badge: `01/${total}`,
     name: "Marketplace Operations",
     icon: ShoppingBag,
     ghost: "01",
-    statValue: "55K+",
+    statValue: FIGURES.marketplaceOrdersPerMonth.text,
     statLabel: "Orders / month",
     headline: (
       <>
@@ -47,34 +50,34 @@ const cards: Card[] = [
     body: "From launch-day listings to daily pricing, stock and fulfilment, we run the marketplace operation behind brand growth.",
     features: ["Catalog & content", "Inventory sync", "SLA governance"],
     collage: marketplaceImg,
-    collageAlt: "Marketplace collage",
+    collageAlt: "Shopping bags, a phone and parcels illustrating online marketplace orders",
   },
   {
     key: "distribution",
     href: "/businesses/distribution-network",
     dark: false,
-    badge: "02/04",
+    badge: `02/${total}`,
     name: "Distribution Network",
     icon: Truck,
     ghost: "02",
-    statValue: "70K+",
-    statLabel: "Retail touchpoints",
+    statValue: FIGURES.retailers.text,
+    statLabel: "Retailers served",
     headline: (
       <>
-        <span className="text-accent">50 million consumers</span>, one retailer at a time.
+        <span className="text-accent">{FIGURES.consumersReached.prose} consumers</span>, one retailer at a time.
       </>
     ),
-    body: "Central and Western India's distribution leader, metro to rural.",
-    features: ["Xiaomi · Jio · Samsung", "500+ distributors", "350K sq ft warehousing"],
+    body: "India's leading distribution house, metro to rural.",
+    features: ["Xiaomi · Jio · Samsung", `${FIGURES.distributors.text} distributors`, `${FIGURES.warehousingSqFt.text} warehousing`],
     collage: distributionImg,
-    collageAlt: "Distribution collage",
+    collageAlt: "Map of India with delivery trucks illustrating the national distribution network",
   },
   {
     key: "global-trade",
     href: "/businesses/global-trade",
     dark: true,
-    badge: "03/04",
-    name: "Rio World · Global Trade",
+    badge: `03/${total}`,
+    name: "Rio World · Global Trade & Exports",
     icon: Globe2,
     ghost: "03",
     statValue: "3 regions",
@@ -87,14 +90,14 @@ const cards: Card[] = [
     body: "Rio World sources smartphones and consumer electronics from multiple channels and supplies buyers across international markets.",
     features: ["Import & sourcing", "Export enablement", "Customs & settlement"],
     collage: exportImg,
-    collageAlt: "Global trade collage",
+    collageAlt: "Cargo ship, containers and a globe illustrating global trade and exports",
   },
   {
     key: "sustainability",
-    href: "https://www.oyugreen.com",
+    href: OYU_GREEN_URL,
     external: true,
     dark: false,
-    badge: "04/04",
+    badge: `04/${total}`,
     name: "Sustainability · OYU Green",
     icon: Leaf,
     ghost: "04",
@@ -108,7 +111,7 @@ const cards: Card[] = [
     body: "From tree planting to cleaner cooking and plastic recovery, OYU Green develops projects designed to deliver measurable environmental results.",
     features: ["Nature-based removal", "Cookstoves & water", "Satellite dMRV"],
     collage: oyuImg,
-    collageAlt: "Sustainability collage",
+    collageAlt: "Tea garden and leaves illustrating OYU Green's climate projects",
   },
 ];
 
@@ -207,30 +210,30 @@ export function OurBusinessesSection() {
   }, []);
 
   return (
-    <section className="py-20 md:py-36">
+    <section id="our-businesses" className="py-16 md:py-36">
       <div className="mx-auto max-w-7xl px-5 lg:px-10 relative">
         {/* Sticky section header */}
-        <div ref={headRef} className="sticky top-7 z-0 pb-6 md:pb-10">
+        <div ref={headRef} className="z-0 pb-6 md:sticky md:top-7 md:pb-10">
           <div className="flex flex-wrap items-center gap-3.5 pb-4">
             <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[oklch(0.89_0.012_75)] text-[11.5px] font-semibold text-ink">
-              05
+              {total}
             </span>
             <span className="text-[13.5px] font-semibold text-ink">Our businesses</span>
-            <span className="ml-auto text-[11px] uppercase tracking-[0.2em] text-ink-soft">
-              Est. 1997 · 9 global offices
+            <span className="ml-auto hidden text-[11px] uppercase tracking-[0.2em] text-ink-soft md:inline">
+              Est. {FOUNDED_YEAR} · {OFFICES.length} global offices
             </span>
           </div>
           <div className="h-px bg-line" />
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-14 pt-6 md:pt-8 md:px-14 items-end">
             <h2 className="md:col-span-5 font-display text-2xl md:text-[clamp(28px,3.4vh_+_10px,46px)] font-bold tracking-[-0.03em] leading-[1.06] text-ink">
-              Five businesses.
+              {BUSINESS_COUNT_WORD} businesses.
               <br />
               One commerce engine.
             </h2>
             <p className="md:col-span-7 text-sm md:text-[15px] leading-[1.65] text-ink-soft max-w-[56ch]">
-              Five businesses, each built for a different route to market. Together, they connect
-              brands with customers through marketplaces, retail distribution, trading, global trade
-              and sustainability.
+              {BUSINESS_COUNT_WORD} businesses, each built for a different route to market. Together, they
+              connect brands with customers through marketplaces, retail distribution, global trade
+              and exports, and sustainability.
             </p>
           </div>
         </div>
@@ -245,8 +248,8 @@ export function OurBusinessesSection() {
               ref={(el) => {
                 rectRefs.current[i] = el;
               }}
-              className={`sticky top-20 md:top-[240px] md:h-[clamp(420px,58vh,560px)] ${
-                i === 0 ? "" : "mt-[48vh] md:mt-[65vh]"
+              className={`md:sticky md:top-[240px] md:h-[clamp(420px,58vh,560px)] ${
+                i === 0 ? "" : "mt-4 md:mt-[65vh]"
               }`}
               style={{ zIndex: i + 1 }}
             >
@@ -302,6 +305,12 @@ export function OurBusinessesSection() {
                     {card.badge}
                   </span>
                   <span className="text-[13.5px] font-semibold">{card.name}</span>
+                  {card.external && (
+                    <span className="ml-auto inline-flex items-center gap-1 text-xs opacity-70">
+                      oyugreen.com <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                      <span className="sr-only">(opens in a new tab)</span>
+                    </span>
+                  )}
                 </div>
 
                 {/* Floating collage (Desktop original layout) */}
@@ -309,12 +318,11 @@ export function OurBusinessesSection() {
                   ref={(el) => {
                     gfxRefs.current[i] = el;
                   }}
-                  aria-hidden
                   className="pointer-events-none absolute bottom-5 left-[17%] top-[52px] z-0 hidden w-[23%] items-center justify-center will-change-transform md:flex"
                 >
                   <Image
                     src={card.collage}
-                    alt=""
+                    alt={card.collageAlt}
                     className="w-full h-full object-contain object-bottom"
                   />
                 </div>
@@ -367,13 +375,13 @@ export function OurBusinessesSection() {
                       {card.features.map((f, fi) => (
                         <div key={f} className="min-w-0">
                           <div
-                            className={`text-[10px] tracking-[0.16em] ${
+                            className={`text-[11px] tracking-[0.16em] ${
                               card.dark ? "text-white/40" : "text-[oklch(0.60_0.01_60)]"
                             }`}
                           >
                             {String(fi + 1).padStart(2, "0")}
                           </div>
-                          <div className="mt-1 text-[11px] leading-tight font-semibold sm:text-[12px] md:text-[13px]">{f}</div>
+                          <div className="mt-1 text-xs leading-tight font-semibold md:text-[13px]">{f}</div>
                         </div>
                       ))}
                     </div>

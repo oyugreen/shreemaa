@@ -36,8 +36,8 @@ const HEADINGS = {
     mobile: { lines: ["Every marketplace,", "on command."], focus: [0, "Every marketplace,".indexOf("l")] },
   },
   home: {
-    desktop: { lines: ["Five businesses. One commerce engine."], focus: [0, "Five businesses.".indexOf("b")] },
-    mobile: { lines: ["Five businesses.", "One commerce engine."], focus: [0, "Five businesses.".indexOf("b")] },
+    desktop: { lines: ["Four businesses. One commerce engine."], focus: [0, "Four businesses.".indexOf("b")] },
+    mobile: { lines: ["Four businesses.", "One commerce engine."], focus: [0, "Four businesses.".indexOf("b")] },
   },
 };
 
