@@ -13,6 +13,7 @@ import {
 import { z } from "zod";
 import { toast } from "sonner";
 import { LinkedinIcon, InstagramIcon } from "@/components/icons/BrandIcons";
+import { Honeypot } from "@/components/site/Honeypot";
 import {
   CONTACT,
   OFFICES,
@@ -22,19 +23,11 @@ import {
   isSafeExternalUrl,
 } from "@/config/site";
 import { trackEvent } from "@/lib/analytics";
+import { CONTACT_TOPICS, HONEYPOT_FIELD, contactSchema, type FormResponse } from "@/lib/forms";
 
 const greetings = ["Hello.", "Namaste.", "Salaam.", "Vanakkam.", "Sat Sri Akaal.", "Kem Cho."];
 
-// One topic list for the marquee and the subject field. `id` is sent with the
-// message so each topic can be routed to its team's inbox.
-const inquiries = [
-  { id: "distribution", label: "Distribution" },
-  { id: "marketplace", label: "Marketplace" },
-  { id: "global-trade", label: "Global Trade / Exports" },
-  { id: "sustainability", label: "Sustainability" },
-  { id: "careers", label: "Careers" },
-  { id: "other", label: "Other" },
-];
+const inquiries = CONTACT_TOPICS;
 
 const socials = [
   ...(SOCIAL.linkedin ? [{ Icon: LinkedinIcon, href: SOCIAL.linkedin, label: "LinkedIn" }] : []),
@@ -43,26 +36,14 @@ const socials = [
 
 const onboardingUrl = isSafeExternalUrl(PARTNER_ONBOARDING_URL) ? PARTNER_ONBOARDING_URL : "";
 
-const contactSchema = z.object({
-  name: z.string().trim().min(2, "Please enter your full name").max(100),
-  company: z.string().trim().max(120),
-  email: z.string().trim().email("Enter a valid email").max(200),
-  phone: z
-    .string()
-    .trim()
-    .min(7, "Enter a valid phone number")
-    .max(20)
-    .regex(/^[0-9+\-\s()]+$/, "Only digits, spaces and + - ( ) allowed"),
-  message: z.string().trim().min(20, "Tell us a bit more, at least 20 characters").max(1000),
-});
-
 type FieldErrors = Partial<Record<keyof z.infer<typeof contactSchema>, string>>;
 
 export function ContactView() {
   const [greetIdx, setGreetIdx] = useState(0);
-  const [type, setType] = useState(inquiries[0].id);
+  const [type, setType] = useState<string>(inquiries[0].id);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     const t = setInterval(() => setGreetIdx((i) => (i + 1) % greetings.length), 2400);
@@ -74,16 +55,19 @@ export function ContactView() {
     [type],
   );
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (sending) return;
     const fd = new FormData(e.currentTarget);
-    const parsed = contactSchema.safeParse({
+    const values = {
       name: fd.get("name"),
       company: fd.get("company"),
       email: fd.get("email"),
       phone: fd.get("phone"),
+      topic: type,
       message: fd.get("message"),
-    });
+    };
+    const parsed = contactSchema.safeParse(values);
     if (!parsed.success) {
       const next: FieldErrors = {};
       for (const issue of parsed.error.issues) {
@@ -95,9 +79,27 @@ export function ContactView() {
       return;
     }
     setErrors({});
-    trackEvent("generate_lead", { form: "contact", topic: type });
-    setSubmitted(true);
-    toast.success("Message sent. We will be in touch shortly.");
+    setSending(true);
+    try {
+      const res = await fetch("/api/forms/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...parsed.data, [HONEYPOT_FIELD]: fd.get(HONEYPOT_FIELD) }),
+      });
+      const result = (await res.json().catch(() => null)) as FormResponse | null;
+      if (!result?.ok) {
+        if (result?.fieldErrors) setErrors(result.fieldErrors as FieldErrors);
+        toast.error(result?.error ?? "We couldn't send that right now. Please try again.");
+        return;
+      }
+      trackEvent("generate_lead", { form: "contact", topic: type });
+      setSubmitted(true);
+      toast.success("Message sent. We will be in touch shortly.");
+    } catch {
+      toast.error("We couldn't send that right now. Check your connection and try again.");
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -285,6 +287,7 @@ export function ContactView() {
                     noValidate
                     className="space-y-6"
                   >
+                    <Honeypot />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FloatField label="Full name" name="name" type="text" autoComplete="name" error={errors.name} />
                       <FloatField label="Company (optional)" name="company" type="text" autoComplete="organization" required={false} error={errors.company} />
@@ -312,9 +315,10 @@ export function ContactView() {
                       </div>
                       <button
                         type="submit"
-                        className="group relative inline-flex items-center gap-3 bg-ink text-white pl-7 pr-2 py-2.5 rounded-full text-sm font-medium overflow-hidden"
+                        disabled={sending}
+                        className="group relative inline-flex items-center gap-3 bg-ink text-white pl-7 pr-2 py-2.5 rounded-full text-sm font-medium overflow-hidden disabled:opacity-70 disabled:cursor-wait"
                       >
-                        <span className="relative z-10">Send message</span>
+                        <span className="relative z-10">{sending ? "Sending…" : "Send message"}</span>
                         <span className="relative z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-ink group-hover:bg-brand group-hover:text-white transition-colors">
                           <ArrowUpRight className="h-4 w-4" />
                         </span>
