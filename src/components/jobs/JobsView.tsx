@@ -7,11 +7,10 @@ import UnicornScene from "unicornstudio-react/next";
 import { JOBS as jobs, type Job } from "@/config/jobs";
 import { CONTACT } from "@/config/site";
 import { trackEvent } from "@/lib/analytics";
+import { RESUME_TYPES, resumeError as checkResume, type FormResponse } from "@/lib/forms";
+import { Honeypot } from "@/components/site/Honeypot";
 
 const departments = ["All", ...Array.from(new Set(jobs.map((j) => j.dept)))];
-
-const RESUME_TYPES = [".pdf", ".doc", ".docx"];
-const RESUME_MAX_BYTES = 5 * 1024 * 1024;
 
 const heroPhrases = [
   "problem solvers",
@@ -227,6 +226,8 @@ function ApplyDialog({ job, onClose }: { job: Job | null; onClose: () => void })
   const [submitted, setSubmitted] = useState(false);
   const [resume, setResume] = useState<File | null>(null);
   const [resumeError, setResumeError] = useState("");
+  const [sending, setSending] = useState(false);
+  const [formError, setFormError] = useState("");
   const uid = useId();
 
   useEffect(() => {
@@ -241,16 +242,34 @@ function ApplyDialog({ job, onClose }: { job: Job | null; onClose: () => void })
       setResumeError("");
       return;
     }
-    const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
-    if (!RESUME_TYPES.includes(ext)) {
-      setResume(null);
-      setResumeError("Upload a PDF or Word file (.pdf, .doc, .docx).");
-    } else if (file.size > RESUME_MAX_BYTES) {
-      setResume(null);
-      setResumeError("That file is over 5 MB. Please upload a smaller file.");
-    } else {
-      setResume(file);
-      setResumeError("");
+    const error = checkResume(file);
+    setResume(error ? null : file);
+    setResumeError(error);
+  }
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (resumeError || sending) return;
+    const role = job?.title ?? "General application";
+    const fd = new FormData(e.currentTarget);
+    fd.set("role", role);
+    setSending(true);
+    setFormError("");
+    try {
+      const res = await fetch("/api/forms/apply", { method: "POST", body: fd });
+      const result = (await res.json().catch(() => null)) as FormResponse | null;
+      if (!result?.ok) {
+        const fieldMessages = result?.fieldErrors ? Object.values(result.fieldErrors) : [];
+        if (result?.fieldErrors?.resume) setResumeError(result.fieldErrors.resume);
+        setFormError(fieldMessages[0] ?? result?.error ?? "We couldn't send that right now. Please try again.");
+        return;
+      }
+      trackEvent("job_application", { role });
+      setSubmitted(true);
+    } catch {
+      setFormError("We couldn't send that right now. Check your connection and try again.");
+    } finally {
+      setSending(false);
     }
   }
 
@@ -305,15 +324,8 @@ function ApplyDialog({ job, onClose }: { job: Job | null; onClose: () => void })
               <p className="mt-2 text-white/90 text-sm">Our team will be in touch within one week.</p>
             </div>
           ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (resumeError) return;
-                trackEvent("job_application", { role: job?.title ?? "General application" });
-                setSubmitted(true);
-              }}
-              className="space-y-4"
-            >
+            <form onSubmit={onSubmit} className="relative space-y-4">
+              <Honeypot />
               {fields.map((f) => (
                 <div key={f.name}>
                   <label htmlFor={`${uid}-${f.name}`} className="text-xs font-medium uppercase tracking-wider text-ink-soft">{f.label}</label>
@@ -367,8 +379,9 @@ function ApplyDialog({ job, onClose }: { job: Job | null; onClose: () => void })
                 We use these details only to assess your application. See our{" "}
                 <Link href="/privacy" className="text-accent hover:underline">Privacy Policy</Link>.
               </p>
-              <button type="submit" className="w-full inline-flex items-center justify-center gap-2 bg-ink text-white py-3.5 rounded-full font-semibold hover:bg-ink/85">
-                Submit application <ArrowRight className="h-4 w-4" />
+              {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
+              <button type="submit" disabled={sending} className="w-full inline-flex items-center justify-center gap-2 bg-ink text-white py-3.5 rounded-full font-semibold hover:bg-ink/85 disabled:opacity-70 disabled:cursor-wait">
+                {sending ? "Sending…" : <>Submit application <ArrowRight className="h-4 w-4" /></>}
               </button>
             </form>
           )}
