@@ -18,6 +18,8 @@ import {
   isSafeExternalUrl,
 } from "@/config/site";
 import { trackEvent } from "@/lib/analytics";
+import { HONEYPOT_FIELD, type FormResponse } from "@/lib/forms";
+import { Honeypot } from "@/components/site/Honeypot";
 
 const focusRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-ink";
@@ -66,13 +68,33 @@ const linkClass = `inline-flex min-h-11 items-center gap-1.5 text-sm text-white/
 export function SiteFooter() {
   const pathname = usePathname();
   const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [subscribing, setSubscribing] = useState(false);
   const isContactPage = pathname === "/contact";
 
-  function handleNewsletterSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleNewsletterSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    trackEvent("newsletter_signup");
-    setNewsletterEmail("");
-    toast.success("You are on the list. Watch your inbox.");
+    if (subscribing) return;
+    const fd = new FormData(event.currentTarget);
+    setSubscribing(true);
+    try {
+      const res = await fetch("/api/forms/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newsletterEmail, page: pathname, [HONEYPOT_FIELD]: fd.get(HONEYPOT_FIELD) }),
+      });
+      const result = (await res.json().catch(() => null)) as FormResponse | null;
+      if (!result?.ok) {
+        toast.error(result?.error ?? "We couldn't sign you up right now. Please try again.");
+        return;
+      }
+      trackEvent("newsletter_signup");
+      setNewsletterEmail("");
+      toast.success("You are on the list. Watch your inbox.");
+    } catch {
+      toast.error("We couldn't sign you up right now. Check your connection and try again.");
+    } finally {
+      setSubscribing(false);
+    }
   }
 
   return (
@@ -106,7 +128,8 @@ export function SiteFooter() {
                   A considered briefing on marketplaces, distribution and global trade—delivered
                   when there is something worth sharing.
                 </p>
-                <form onSubmit={handleNewsletterSubmit} className="mt-6 flex max-w-[500px] gap-2" aria-label="Newsletter signup">
+                <form onSubmit={handleNewsletterSubmit} className="relative mt-6 flex max-w-[500px] gap-2" aria-label="Newsletter signup">
+                  <Honeypot />
                   <label htmlFor="footer-newsletter-email" className="sr-only">Work email</label>
                   <input
                     id="footer-newsletter-email"
@@ -120,9 +143,10 @@ export function SiteFooter() {
                   />
                   <button
                     type="submit"
-                    className={`group inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-5 py-3.5 text-sm font-semibold text-ink transition-transform duration-200 hover:translate-x-[2px] ${focusRing}`}
+                    disabled={subscribing}
+                    className={`group inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-5 py-3.5 text-sm font-semibold text-ink transition-transform duration-200 hover:translate-x-[2px] disabled:opacity-70 disabled:cursor-wait ${focusRing}`}
                   >
-                    Subscribe <ArrowUpRight className="h-4 w-4" />
+                    {subscribing ? "Subscribing…" : "Subscribe"} <ArrowUpRight className="h-4 w-4" />
                   </button>
                 </form>
               </div>
