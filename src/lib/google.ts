@@ -153,3 +153,83 @@ export async function uploadToDrive(file: File, fileName: string): Promise<strin
   const data = (await res.json()) as { id: string; webViewLink?: string };
   return data.webViewLink ?? `https://drive.google.com/file/d/${data.id}/view`;
 }
+
+export type CheckResult = { ok: boolean; detail: string };
+
+async function googleError(res: Response) {
+  const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
+  return `${res.status}: ${body?.error?.message ?? res.statusText}`;
+}
+
+/**
+ * Read-only checks of the setup for the /api/forms/health route. Never throws
+ * and never returns secrets, only whether each piece works.
+ */
+export async function checkSetup(requiredTabs: string[]) {
+  const env = {
+    GOOGLE_SERVICE_ACCOUNT_EMAIL: !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    GOOGLE_PRIVATE_KEY: !!process.env.GOOGLE_PRIVATE_KEY,
+    GOOGLE_SHEET_ID: !!process.env.GOOGLE_SHEET_ID,
+    GOOGLE_SHEET_BACKUP_ID: !!process.env.GOOGLE_SHEET_BACKUP_ID,
+    GOOGLE_DRIVE_FOLDER_ID: !!process.env.GOOGLE_DRIVE_FOLDER_ID,
+  };
+
+  let cfg: ReturnType<typeof config>;
+  let token: string;
+  try {
+    cfg = config();
+    token = await accessToken();
+  } catch (error) {
+    const detail = error instanceof GoogleConfigError ? error.message : "Service account login failed";
+    if (!(error instanceof GoogleConfigError)) console.error("[forms/health] login failed:", error);
+    return { ok: false, env, auth: { ok: false, detail } satisfies CheckResult };
+  }
+  const headers = { Authorization: `Bearer ${token}` };
+
+  async function checkSheet(spreadsheetId: string): Promise<CheckResult> {
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties.title`,
+      { headers, cache: "no-store" },
+    );
+    if (!res.ok) return { ok: false, detail: await googleError(res) };
+    const data = (await res.json()) as { sheets?: { properties: { title: string } }[] };
+    const titles = new Set(data.sheets?.map((s) => s.properties.title));
+    const missing = requiredTabs.filter((tab) => !titles.has(tab));
+    return missing.length
+      ? { ok: false, detail: `Missing tabs: ${missing.join(", ")}` }
+      : { ok: true, detail: "Readable, all tabs present" };
+  }
+
+  async function checkFolder(folderId: string): Promise<CheckResult> {
+    const res = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(folderId)}?supportsAllDrives=true&fields=mimeType,driveId,capabilities/canAddChildren`,
+      { headers, cache: "no-store" },
+    );
+    if (!res.ok) return { ok: false, detail: await googleError(res) };
+    const data = (await res.json()) as {
+      mimeType: string;
+      driveId?: string;
+      capabilities?: { canAddChildren?: boolean };
+    };
+    if (data.mimeType !== "application/vnd.google-apps.folder") return { ok: false, detail: "Not a folder" };
+    if (!data.driveId) return { ok: false, detail: "Folder is not in a Shared Drive, so uploads will fail" };
+    if (!data.capabilities?.canAddChildren) return { ok: false, detail: "Service account cannot add files" };
+    return { ok: true, detail: "Shared Drive folder, uploads allowed" };
+  }
+
+  const skipped: CheckResult = { ok: true, detail: "Not configured (optional)" };
+  const [sheet, backupSheet, driveFolder] = await Promise.all([
+    checkSheet(cfg.sheetId),
+    cfg.backupSheetId ? checkSheet(cfg.backupSheetId) : skipped,
+    cfg.driveFolderId ? checkFolder(cfg.driveFolderId) : skipped,
+  ]);
+
+  return {
+    ok: sheet.ok && backupSheet.ok && driveFolder.ok,
+    env,
+    auth: { ok: true, detail: "Service account login works" } satisfies CheckResult,
+    sheet,
+    backupSheet,
+    driveFolder,
+  };
+}
