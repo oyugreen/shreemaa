@@ -44,13 +44,7 @@ export function GlobalTradeView() {
   return (
     <>
       {/* HERO */}
-      <section className="relative isolate overflow-hidden bg-[#130e0b] text-white">
-        {/* Diagonal background gradient matching Marketplace Operations hero */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0"
-          style={{ background: "linear-gradient(135deg, #2b1c18 0%, #1a1210 50%, #130e0b 100%)" }}
-        />
+      <section className="relative isolate overflow-hidden bg-ink text-white">
         {/* Soft red brand glow matching Marketplace Operations hero */}
         <div
           aria-hidden="true"
@@ -64,13 +58,13 @@ export function GlobalTradeView() {
         {/* Pass-through outside the copy, so the globe behind can be dragged. */}
         <div className="pointer-events-none relative z-10 mx-auto max-w-7xl px-6 lg:px-10 pt-28 pb-20 md:pt-36 md:pb-28">
           <div className="pointer-events-auto max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur text-[11px] uppercase tracking-[0.18em] font-medium">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/70 backdrop-blur">
               <Globe2 className="h-3 w-3" /> Rio World · Global Trade
             </div>
             <h1 className="mt-6 text-5xl md:text-6xl font-bold tracking-[-0.025em] leading-[1.02]">
               Exporting smartphones
               <br />
-              <span className="font-serif italic font-normal tracking-[-0.02em] text-accent">
+              <span className="font-serif-display italic text-accent">
                 and electronics to the world.
               </span>
             </h1>
@@ -101,12 +95,12 @@ export function GlobalTradeView() {
       <section id="categories" className="py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-2xl">
-            <div className="text-xs uppercase tracking-[0.2em] text-accent font-semibold">
+            <div className="text-xs uppercase tracking-[0.24em] text-accent font-semibold">
               What we export
             </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight">
               The brands the world{" "}
-              <span className="italic font-display">is buying.</span>
+              <span className="font-serif-display italic text-accent">is buying.</span>
             </h2>
             <p className="mt-4 text-ink-soft leading-relaxed">
               We focus on high-velocity categories with consistent global demand.
@@ -143,12 +137,12 @@ export function GlobalTradeView() {
         <div className="absolute -top-40 -left-20 h-[420px] w-[420px] rounded-full bg-brand/20 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-2xl">
-            <div className="text-xs uppercase tracking-[0.2em] text-white/60 font-semibold">
+            <div className="text-xs uppercase tracking-[0.24em] text-accent font-semibold">
               How it works
             </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight">
               From sourcing to{" "}
-              <span className="italic font-display text-white/90">
+              <span className="font-serif-display italic text-accent">
                 the global shelf.
               </span>
             </h2>
