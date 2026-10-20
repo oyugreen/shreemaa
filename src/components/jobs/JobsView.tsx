@@ -18,6 +18,12 @@ const heroPhrases = [
   "commercial thinkers",
   "hands-on operators",
   "curious minds",
+  "brand builders",
+  "deal makers",
+  "number crunchers",
+  "supply chain experts",
+  "fast learners",
+  "people who own it",
   "people who deliver",
 ];
 
