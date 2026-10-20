@@ -10,10 +10,9 @@ import { BUSINESSES, FOUNDED_YEAR, PARTNER_ONBOARDING_URL, isSafeExternalUrl } f
 
 type SubItem = { to?: string; href?: string; title: string; desc: string };
 
-const businesses: SubItem[] = [
-  { to: "/businesses", title: "All businesses", desc: "The group at a glance" },
-  ...BUSINESSES.map((b) => (b.external ? { href: b.href, title: b.name, desc: b.desc } : { to: b.href, title: b.name, desc: b.desc })),
-];
+const businesses: SubItem[] = BUSINESSES.map((b) =>
+  b.external ? { href: b.href, title: b.name, desc: b.desc } : { to: b.href, title: b.name, desc: b.desc },
+);
 
 const onboardingUrl = isSafeExternalUrl(PARTNER_ONBOARDING_URL) ? PARTNER_ONBOARDING_URL : "";
 
