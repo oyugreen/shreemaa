@@ -221,9 +221,9 @@ export function ShelfSignalSection() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="grid grid-cols-1 items-end gap-12 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">What we do</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.24em] text-accent">What we do</div>
             <h2 className="mt-3 text-4xl font-bold tracking-tight md:text-5xl">
-              The full marketplace stack, <span className="font-display italic">operated in-house.</span>
+              The full marketplace stack, <span className="font-serif-display italic text-accent">operated in-house.</span>
             </h2>
           </div>
           <p className="leading-relaxed text-ink-soft lg:col-span-5">

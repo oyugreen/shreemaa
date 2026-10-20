@@ -87,7 +87,7 @@ export function DistributionView() {
             <h1 className="mt-6 text-[clamp(35px,8.7vw,64px)] md:text-[clamp(48px,6.975vw,108px)] font-bold tracking-[-0.025em] leading-[1.02]">
               India&apos;s leading
               <br />
-              <span className="font-serif italic font-normal tracking-[-0.02em] text-accent">
+              <span className="font-serif-display italic text-accent">
                 distribution house.
               </span>
             </h1>
@@ -155,12 +155,12 @@ export function DistributionView() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
             <div className="lg:col-span-7">
-              <div className="text-xs uppercase tracking-[0.2em] text-accent font-semibold">
+              <div className="text-xs uppercase tracking-[0.24em] text-accent font-semibold">
                 What we do
               </div>
               <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight">
                 The full distribution stack,{" "}
-                <span className="italic font-display">
+                <span className="font-serif-display italic text-accent">
                   operated in-house.
                 </span>
               </h2>
@@ -201,12 +201,12 @@ export function DistributionView() {
         <div className="absolute -top-32 -left-20 h-[420px] w-[420px] rounded-full bg-brand/20 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-2xl">
-            <div className="text-xs uppercase tracking-[0.2em] text-white/60 font-semibold">
+            <div className="text-xs uppercase tracking-[0.24em] text-accent font-semibold">
               Network reach
             </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight">
               From metro to{" "}
-              <span className="italic font-display text-white/90">
+              <span className="font-serif-display italic text-accent">
                 micro-market.
               </span>
             </h2>

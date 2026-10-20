@@ -265,7 +265,7 @@ function WhoWeAre() {
                       }`}
                     >
                       <span
-                        className={`text-sm font-mono tabular-nums transition-colors ${isActive ? "text-accent" : "text-white/40 group-hover:text-white/70"
+                        className={`text-sm font-mono tabular-nums transition-colors whitespace-nowrap lg:w-[7ch] lg:shrink-0 ${isActive ? "text-accent" : "text-white/40 group-hover:text-white/70"
                           }`}
                       >
                         {e.year}

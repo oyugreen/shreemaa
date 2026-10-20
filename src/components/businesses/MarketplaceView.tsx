@@ -142,7 +142,7 @@ export function MarketplaceView() {
       <section className="overflow-hidden bg-ink py-20 text-white md:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/15 border border-brand/30 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/15 border border-brand/30 text-xs font-semibold uppercase tracking-[0.24em] text-accent">
               <Sparkles className="h-3.5 w-3.5" /> Active on
             </div>
             <h2 className="mt-4 text-4xl font-bold tracking-tight text-white md:text-5xl">
@@ -233,9 +233,9 @@ export function MarketplaceView() {
         <div className="absolute -top-32 -left-20 h-[420px] w-[420px] rounded-full bg-brand/20 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-2xl">
-            <div className="text-xs uppercase tracking-[0.2em] text-white/60 font-semibold">From onboarding to category leadership</div>
+            <div className="text-xs uppercase tracking-[0.24em] text-accent font-semibold">From onboarding to category leadership</div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight">
-              A repeatable path to <span className="italic font-display text-white/90">category dominance.</span>
+              A repeatable path to <span className="font-serif-display italic text-accent">category dominance.</span>
             </h2>
           </div>
 
@@ -259,9 +259,9 @@ export function MarketplaceView() {
         <div className="absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-brand/10 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
           <div className="max-w-3xl mb-14">
-            <div className="text-xs uppercase tracking-[0.2em] text-accent font-semibold">Where we play</div>
+            <div className="text-xs uppercase tracking-[0.24em] text-accent font-semibold">Where we play</div>
             <h2 className="mt-3 text-4xl md:text-6xl font-bold tracking-tight leading-[1.02]">
-              We win where the competition is <span className="italic font-display">toughest.</span>
+              We win where the competition is <span className="font-serif-display italic text-accent">toughest.</span>
             </h2>
             <p className="mt-5 text-ink-soft leading-relaxed text-lg">
               Our playbook was built in some of the most competitive categories online. Search ranking, pricing discipline, and fulfillment that lands on time. That operational muscle is what we bring to the table.
@@ -290,9 +290,9 @@ export function MarketplaceView() {
       <section className="py-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-5">
-            <div className="text-xs uppercase tracking-[0.2em] text-accent font-semibold">Fulfillment footprint</div>
+            <div className="text-xs uppercase tracking-[0.24em] text-accent font-semibold">Fulfillment footprint</div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight">
-              22+ states. <span className="italic font-display">~80% of India&apos;s pincodes.</span>
+              22+ states. <span className="font-serif-display italic text-accent">~80% of India&apos;s pincodes.</span>
             </h2>
             <p className="mt-5 text-ink-soft leading-relaxed">
               We operate primarily on FBA and FBF, with APOBs registered across 22+ states so inventory
