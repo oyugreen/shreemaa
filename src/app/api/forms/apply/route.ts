@@ -1,4 +1,5 @@
 import { appendRow, uploadToDrive } from "@/lib/google";
+import { isCloudinaryConfigured, uploadResume } from "@/lib/cloudinary";
 import {
   HONEYPOT_FIELD,
   applicationSchema,
@@ -44,10 +45,14 @@ export async function POST(request: Request) {
   const submittedAt = new Date().toISOString();
   try {
     const safeName = `${submittedAt.slice(0, 10)} ${name} - ${file.name}`.replace(/[\\/:*?"<>|]+/g, "_");
+    // Resumes go to Cloudinary; Drive is used only when Cloudinary isn't set up.
     // A failed upload still records the application, so the candidate isn't lost.
     let resumeLink: string;
     try {
-      resumeLink = (await uploadToDrive(file, safeName)) ?? `Not stored: ${file.name}`;
+      const link = isCloudinaryConfigured()
+        ? await uploadResume(file, `${submittedAt.slice(0, 10)} ${name}`)
+        : await uploadToDrive(file, safeName);
+      resumeLink = link ?? `Not stored: ${file.name}`;
     } catch (error) {
       console.error("[forms/apply] resume upload failed:", error);
       resumeLink = `Upload failed: ${file.name}`;
