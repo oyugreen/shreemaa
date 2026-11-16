@@ -288,7 +288,7 @@ function ApplyDialog({ job, onClose }: { job: Job | null; onClose: () => void })
         className="bg-white rounded-t-3xl md:rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 bg-white p-6 border-b border-line flex items-start justify-between">
+        <div className="sticky top-0 z-10 bg-white p-6 border-b border-line flex items-start justify-between gap-4">
           <div>
             <div className="text-xs uppercase tracking-wider text-accent font-semibold">
               {job ? `${job.dept} · ${job.location}` : "Careers"}
